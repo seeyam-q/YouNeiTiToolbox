@@ -1,0 +1,14 @@
+{
+    "name": "com.fortysevene.external-asset-loader",
+    "version": "1.0.1",
+    "unity": "2019.3",
+    "displayName": "External Asset Loader",
+    "description": "Provides a unifying way to download and load external media assets (audio, image, video) to your Unity project.",
+    "documentationUrl": "https://github.com/seeyam-q/YouNeiTiToolbox/blob/master/ReadMe.md",
+    "licensesUrl": "https://github.com/seeyam-q/YouNeiTiToolbox/blob/master/LICENSE",
+    "author": {
+        "name": "Seeyam",
+        "email": "seeyamq@gmail.com",
+        "url": "https://seeyam-q.github.io/"
+    }
+}
