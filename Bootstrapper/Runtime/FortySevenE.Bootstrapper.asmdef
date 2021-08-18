@@ -1,0 +1,17 @@
+{
+    "name": "FortySevenE.Bootstrapper",
+    "rootNamespace": "",
+    "references": [
+        "GUID:5350fc5f2dee5894c94015dbe725cf05",
+        "GUID:c55d28459d9c4444ebb4788be912e1f1"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,14 @@
+{
+    "name": "com.fortysevene.display-manager",
+    "version": "1.0.0",
+    "unity": "2019.3",
+    "displayName": "Display Manager",
+    "description": "Specify the size and position of multi display windows on start.",
+    "documentationUrl": "https://github.com/seeyam-q/YouNeiTiToolbox/blob/master/ReadMe.md",
+    "licensesUrl": "https://github.com/seeyam-q/YouNeiTiToolbox/blob/master/LICENSE",
+    "author": {
+        "name": "Seeyam",
+        "email": "seeyamq@gmail.com",
+        "url": "https://seeyam-q.github.io/"
+    }
+}

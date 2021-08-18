@@ -1,0 +1,33 @@
+{
+    "name": "com.fortysevene.bootstrapper",
+    "version": "1.0.0",
+    "unity": "2019.3",
+    "displayName": "Bootstrapper",
+    "description": "Bind fields and properties of Monobehaviours objects to a JSON file. Save, load, make changes to them at runtime.",
+    "documentationUrl": "https://github.com/seeyam-q/YouNeiTiToolbox/blob/master/ReadMe.md",
+    "licensesUrl": "https://github.com/seeyam-q/YouNeiTiToolbox/blob/master/LICENSE",
+    "keywords": [
+        "Bootstrap",
+        "Runtime Editor"
+    ],
+    "author": {
+        "name": "Seeyam",
+        "email": "seeyamq@gmail.com",
+        "url": "https://seeyam-q.github.io/"
+    },
+    "scopedRegistries": [
+        {
+            "name": "package.openupm.com",
+            "url": "https://package.openupm.com",
+            "scopes": [
+                "com.yasirkula.runtimeinspector",
+                "jillejr.newtonsoft.json-for-unity.converters"
+            ]
+        }
+    ],
+    "dependencies": {
+        "com.unity.nuget.newtonsoft-json" : "2.0.2",
+        "jillejr.newtonsoft.json-for-unity.converters" : "1.4.0",
+        "com.yasirkula.runtimeinspector" : "1.7.0"
+    }
+}
