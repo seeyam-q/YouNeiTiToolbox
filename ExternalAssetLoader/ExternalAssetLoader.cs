@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Events;
 using Newtonsoft.Json;
+using FortySevenE;
 
 namespace FortySevenE.ExternalAssetLoading
 {
-    public class ExternalAssetLoader : MonoBehaviour
+    public class ExternalAssetLoader : Singleton<ExternalAssetLoader>
     {
         private readonly string[] _videoExtension = { ".mp4", ".mov", ".mkv", ".webm" };
         private readonly string[] _audioExtension = { ".wav", ".mp3", ".ogg", ".aac" };
         private readonly string[] _imageExtension = { ".jpg", ".png", ".tiff", ".jpeg", ".psd", ".tga" };
 
-        public static ExternalAssetLoader Instance;
         public static event Action LocalAssetLoadingFinished;
         public static readonly string AssetKeyInstancePrefix = "[{0}]";
 
@@ -40,25 +39,12 @@ namespace FortySevenE.ExternalAssetLoading
         public bool IsBusyLoading { get; private set; }
 
         private ExternalLoadedAssetCollection _currentLoadingAssetCollection;
-        private Queue<GetAssetsRequest> _pendingLoadingRequests = new Queue<GetAssetsRequest>();
+        private Queue<LoadAssetsRequest> _pendingLoadingRequests = new Queue<LoadAssetsRequest>();
         private Coroutine _assetLoadingCoroutine;
         private UnityWebRequest _currentAssetLoadingWebRequest;
         private bool _showLoadingGUI;
         private GUIStyle _loadingStatusGUIStyle;
         private string _assetLoadingStatusString;
-
-        private void Awake()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else if (Instance != this)
-            {
-                Destroy(Instance);
-            }
-        }
 
         private void Start()
         {
@@ -69,7 +55,7 @@ namespace FortySevenE.ExternalAssetLoading
             _loadingStatusGUIStyle.fontSize = 12 * Screen.width / 1080;
 
             //Load local assets
-            LoadAssets(new GetAssetsRequest(
+            LoadAssets(new LoadAssetsRequest(
                 _localAssetsFolderPath,
                 showLoadingGUI: true,
                 onCompleted: (ExternalLoadedAssetCollection loadedAssetCollection) =>
@@ -90,13 +76,15 @@ namespace FortySevenE.ExternalAssetLoading
             }
         }
 
-        public void LoadAssets(GetAssetsRequest request)
+        public void LoadAssets(LoadAssetsRequest request)
         {
             _pendingLoadingRequests.Enqueue(request);
         }
 
-        private void ProcessLoadAssetsRequest(GetAssetsRequest request)
+        private void ProcessLoadAssetsRequest(LoadAssetsRequest request)
         {
+            BetterLogging.Log($"Start loading {request}");
+
             IsBusyLoading = true;
 
             var foundAssetInfos = new List<ExternalAssetInfo>();
@@ -156,10 +144,11 @@ namespace FortySevenE.ExternalAssetLoading
                         try
                         {
                             request.onCompleted?.Invoke(loadedAssetCollection);
+                            BetterLogging.Log($"Finish loading {request}");
                         }
                         catch (Exception e)
                         {
-                            Debug.LogWarning($"[{GetType().Name}]Exception happened on AssetLoading callbacks: {e}");
+                            BetterLogging.Log($"Exception happened on AssetLoading callbacks: {e}", LogLevel.Error);
                         }
 
                         CleanUpAfterAssetLoadingFinished();
@@ -181,7 +170,7 @@ namespace FortySevenE.ExternalAssetLoading
 
                 if (assetInfo.type == ExternalAssetType.Unknown)
                 {
-                    Debug.LogWarningFormat("[{0}] Cannot identify the assset type of {1}. Skip", GetType().Name, assetInfo.key);
+                    BetterLogging.Log($"Cannot identify the assset type of {assetInfo.key}. Skip", LogLevel.Info);
                     continue;
                 }
 
@@ -204,7 +193,7 @@ namespace FortySevenE.ExternalAssetLoading
 
                 if (!string.IsNullOrEmpty(_currentAssetLoadingWebRequest.error))
                 {
-                    Debug.LogWarningFormat("[{0}] {1}: Failed to load <color=blue>{2}</color>", GetType().Name, _currentAssetLoadingWebRequest.error, _currentAssetLoadingWebRequest.url);
+                    BetterLogging.Log($"{_currentAssetLoadingWebRequest.error}: Failed to load <color=blue>{_currentAssetLoadingWebRequest.url}</color>", LogLevel.Warning);
                     continue;
                 }
 
@@ -262,7 +251,7 @@ namespace FortySevenE.ExternalAssetLoading
                         }
                         break;
                 }
-                _currentLoadingAssetCollection.allAvailableAssets.Add(assetInfo.key, assetInfo);
+                _currentLoadingAssetCollection.allAvailableAssets.CreateNewOrUpdateExisting(assetInfo.key, assetInfo);
             }
 
             onCompleteCallback?.Invoke(_currentLoadingAssetCollection);

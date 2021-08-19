@@ -1,0 +1,16 @@
+{
+    "name": "FortySevenE.ExternalAssetLoader",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ec5674c28e3761e4ab3a17e278fc0a99"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

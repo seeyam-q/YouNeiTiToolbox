@@ -24,22 +24,27 @@ namespace FortySevenE.ExternalAssetLoading
         [JsonRequired] public string absPath;
     }
 
-    public class GetAssetsRequest
+    public class LoadAssetsRequest
     {
         public string folderPath;
-        public bool showLoadingGUI;
+        public bool showLoadingGUI = false;
         public Action<ExternalLoadedAssetCollection> onCompleted;
 
-        public GetAssetsRequest()
+        public LoadAssetsRequest()
         {
 
         }
 
-        public GetAssetsRequest(string folderPath, bool showLoadingGUI, Action<ExternalLoadedAssetCollection> onCompleted)
+        public LoadAssetsRequest(string folderPath, bool showLoadingGUI, Action<ExternalLoadedAssetCollection> onCompleted)
         {
             this.folderPath = folderPath;
             this.showLoadingGUI = showLoadingGUI;
             this.onCompleted = onCompleted;
+        }
+
+        public override string ToString()
+        {
+            return folderPath;
         }
     }
 
