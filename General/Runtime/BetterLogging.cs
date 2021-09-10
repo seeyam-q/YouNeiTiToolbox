@@ -30,6 +30,7 @@ namespace FortySevenE
 
     public class BetterLogging : Singleton<BetterLogging>
     {
+        [SerializeField] private bool _keepLogFiles = true;
         [SerializeField] private LogLevel _minLogLevel = LogLevel.Info;
 
         public static readonly string DateTimeParseFormat = "yyyy_MM_dd_T_HH_mm_ss_fff";
@@ -67,44 +68,58 @@ namespace FortySevenE
 
         private void Awake()
         {
-            _logConcurrentQueue = new ConcurrentQueue<UnityLogMessage>();
-
-            CurrentLogFileName = Application.productName + "_" + DateTime.Now.ToString(DateTimeParseFormat) + ".txt";
-            string logDirectory = Path.Combine(Application.persistentDataPath, "Logs");
-            if (!Directory.Exists(logDirectory))
+            if (_keepLogFiles)
             {
-                Directory.CreateDirectory(logDirectory);
-            }
-            CurrentLogPath = Path.Combine(logDirectory, CurrentLogFileName);
+                _logConcurrentQueue = new ConcurrentQueue<UnityLogMessage>();
 
-            if (!File.Exists(CurrentLogPath))
-            {
-                // Create a file to write to.
-                using (StreamWriter sw = File.CreateText(CurrentLogPath))
+                CurrentLogFileName = Application.productName + "_" + DateTime.Now.ToString(DateTimeParseFormat) + ".txt";
+                string logDirectory = Path.Combine(Application.persistentDataPath, "Logs");
+                if (!Directory.Exists(logDirectory))
                 {
-                    sw.WriteLine("App Name: " + Application.productName);
-                    sw.WriteLine("App Version: " + Application.version);
-                    sw.WriteLine("Unity Version: " + Application.unityVersion);
-                    sw.WriteLine("CPU: " + SystemInfo.processorType);
-                    sw.WriteLine("GPU: " + SystemInfo.graphicsDeviceName);
-                    sw.WriteLine("Memory: " + SystemInfo.systemMemorySize);
-                    sw.WriteLine(Environment.NewLine);
+                    Directory.CreateDirectory(logDirectory);
+                }
+                CurrentLogPath = Path.Combine(logDirectory, CurrentLogFileName);
+
+                if (!File.Exists(CurrentLogPath))
+                {
+                    // Create a file to write to.
+                    using (StreamWriter sw = File.CreateText(CurrentLogPath))
+                    {
+                        sw.WriteLine("App Name: " + Application.productName);
+                        sw.WriteLine("App Version: " + Application.version);
+                        sw.WriteLine("Unity Version: " + Application.unityVersion);
+                        sw.WriteLine("CPU: " + SystemInfo.processorType);
+                        sw.WriteLine("GPU: " + SystemInfo.graphicsDeviceName);
+                        sw.WriteLine("Memory: " + SystemInfo.systemMemorySize);
+                        sw.WriteLine(Environment.NewLine);
+                    }
                 }
             }
         }
 
         private void OnEnable()
         {
-            Application.logMessageReceivedThreaded += Application_logMessageReceivedThreaded;
+            if (_keepLogFiles)
+            {
+                Application.logMessageReceivedThreaded += Application_logMessageReceivedThreaded;
+            }
         }
 
         private void OnDisable()
         {
-            Application.logMessageReceivedThreaded -= Application_logMessageReceivedThreaded;
+            if (_keepLogFiles)
+            {
+                Application.logMessageReceivedThreaded -= Application_logMessageReceivedThreaded;
+            }
         }
 
         private void LateUpdate()
         {
+            if (!_keepLogFiles)
+            {
+                return;
+            }
+
             if (_logConcurrentQueue.Count > 0)
             {
                 using (LoggingFileStream = File.AppendText(CurrentLogPath))
