@@ -43,7 +43,7 @@ namespace FortySevenE.DisplayManager
 #endif
             }
 
-#if UNITY_EDITOR
+#if !UNITY_EDITOR
             if (UnityDisplayList.Length > 0)
             {
                 _displayControl.RefreshDisplayPointersAfterNewDisplayAdded();
