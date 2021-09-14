@@ -29,6 +29,9 @@ namespace FortySevenE.DisplayManager
 
         private IEnumerator Start()
         {
+            //Unity will set the display style based on PlayerSettings. Let's wait after that so our display settings will not be overwritten
+            yield return null;
+
             if (_displaySettings.apiType == DisplayControlApiType.UnityNative)
             {
                 _displayControl = gameObject.AddComponent<DisplayControl_UnityNative>();
@@ -48,8 +51,6 @@ namespace FortySevenE.DisplayManager
             {
                 _displayControl.RefreshDisplayPointersAfterNewDisplayAdded();
 
-                //Unity will set the display style based on PlayerSettings. Let's wait after that so our display settings will not be overwritten
-                yield return null;
                 SetDisplayWindowStyle(0, UnityDisplayList[0].windowStyle);
                 SetPositionAndSize(0, UnityDisplayList[0].left, UnityDisplayList[0].top, true, relativeMonitorIndex: UnityDisplayList[0].relativeMonitorIndex,  UnityDisplayList[0].width, UnityDisplayList[0].height);
 
