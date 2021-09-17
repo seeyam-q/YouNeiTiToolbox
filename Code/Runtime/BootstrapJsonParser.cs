@@ -8,14 +8,6 @@ namespace FortySevenE.Bootstrapper
 { 
     public class BootstrapJsonParser: IBootstrapRawTextParser
     {
-        private JsonSerializerSettings _jsonSerializerSettings;
-
-        public BootstrapJsonParser()
-        {
-            _jsonSerializerSettings = new JsonSerializerSettings();
-            _jsonSerializerSettings.Converters.Add(new StringEnumConverter());
-            _jsonSerializerSettings.Converters.Add(new WanzyeeStudio.Json.ColorConverter());
-        }
 
         public bool TryGetSettingDictionary(string rawText, ref Dictionary<string, object> settingDictionary)
         {
@@ -35,7 +27,7 @@ namespace FortySevenE.Bootstrapper
         {
             try
             {
-                referenceValue = JsonConvert.DeserializeObject(rawText, type, _jsonSerializerSettings);
+                referenceValue = JsonConvert.DeserializeObject(rawText, type);
                 return true;
             }
             catch (Exception e)
@@ -48,7 +40,7 @@ namespace FortySevenE.Bootstrapper
 
         public string SerializeDictionary(Dictionary<string, object> value)
         {
-            return JsonConvert.SerializeObject(value, Formatting.Indented, _jsonSerializerSettings);
+            return JsonConvert.SerializeObject(value, Formatting.Indented);
         }
     }
 }
