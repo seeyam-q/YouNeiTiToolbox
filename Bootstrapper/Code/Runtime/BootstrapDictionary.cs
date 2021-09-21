@@ -41,18 +41,18 @@ namespace FortySevenE.Bootstrapper
     {
         public static BootstrapDictionary Instance;
 
-        [Header("Settings")]
+        [Header("Bootstrap Config")]
 
         [SerializeField] protected bool _activeInEditor = default;
         public bool ActiveInEditor { get { return _activeInEditor; } }
 
         [SerializeField] protected BootstrapFileLocation _bootstrapFileDirectory = default;
         [SerializeField] protected string _bootstrapFileNameWithExtension = "bootstrapSettings.json";
-
+        [SerializeField] KeyCode _runtimeEditorKeyStroke = KeyCode.G;
         [SerializeField] protected BootstrapRuntimeEditor _runtimeEditor;
         public BootstrapRuntimeEditor RuntimeEditor { get { return _runtimeEditor; } }
 
-        [Header("Populate the setting to fields if their json attribute name is the same as the keyword")]
+        [Header("Populate settings to the fields if their attribute [DataMember(Name)] matches the key")]
         [SerializeField] protected GameObject[] _settingPopulateList = default;
 
         private List<BootstrapRuntimeAppliedSetting> _bootstrapRuntimeAppliedSettings = new List<BootstrapRuntimeAppliedSetting>();
@@ -140,13 +140,13 @@ namespace FortySevenE.Bootstrapper
                 {
                     LoadBootstrapSettingsFromFile();
                 }
+            }
 
-                if (Input.GetKeyDown(KeyCode.G))
+            if (Input.GetKeyDown(_runtimeEditorKeyStroke))
+            {
+                if (RuntimeEditor != null)
                 {
-                    if (RuntimeEditor != null)
-                    {
-                        RuntimeEditor.enabled = !RuntimeEditor.enabled;
-                    }
+                    RuntimeEditor.enabled = !RuntimeEditor.enabled;
                 }
             }
         }
@@ -174,7 +174,7 @@ namespace FortySevenE.Bootstrapper
                     bootstrapFilePath = Path.Combine(Application.streamingAssetsPath, _bootstrapFileNameWithExtension);
                 }
             }
-            else // if (_bootstrapFileDirectory == BootstrapFileLocation.StreamingAssets)
+            else
             {
                 bootstrapFilePath = Path.Combine(Application.streamingAssetsPath, _bootstrapFileNameWithExtension);
             }
@@ -277,35 +277,7 @@ namespace FortySevenE.Bootstrapper
             return setting;
         }
 
-        private void SaveToFile (string overrideFullPath = null)
-        {
-            string _bootstrapRawText = _bootstrapRawTextParser.SerializeDictionary(_bootstrapSettingDictionary);
-            if (!string.IsNullOrEmpty(_bootstrapRawText))
-            {
-                string bootstrapFilePath;
-                if (string.IsNullOrEmpty(overrideFullPath))
-                {
-                    if (_bootstrapFileDirectory == BootstrapFileLocation.PersistentDataPath)
-                    {
-                        bootstrapFilePath = Path.Combine(Application.persistentDataPath, _bootstrapFileNameWithExtension);
-                    }
-                    else // if (_bootstrapFileDirectory == BootstrapFileLocation.StreamingAssets)
-                    {
-                        bootstrapFilePath = Path.Combine(Application.streamingAssetsPath, _bootstrapFileNameWithExtension);
-                    }
-                }
-                else
-                {
-                    bootstrapFilePath = overrideFullPath;
-                }
-
-                File.WriteAllText(bootstrapFilePath, _bootstrapRawText);
-
-                Debug.Log("Bootstrap saved to <color=blue>" + bootstrapFilePath + "</color>");
-            }
-        }
-
-        public void PopulateSettingsToComponents ()
+        public void PopulateSettingsToComponents()
         {
             _bootstrapRuntimeAppliedSettings.Clear();
 
@@ -350,12 +322,12 @@ namespace FortySevenE.Bootstrapper
             }
         }
 
-        public void UpdateBootstrapFileFromSettingPopulateList()
+        public void SaveAllSettings()
         {
-            if (!Application.isPlaying)
-            {
-                Debug.LogWarning("Can only be used in play mode, as it uses reflections");
-            }
+            //if (!Application.isPlaying)
+            //{
+            //    Debug.LogWarning("Can only be used in play mode, as it uses reflections");
+            //}
 
             foreach (GameObject go in _settingPopulateList)
             {
@@ -393,6 +365,40 @@ namespace FortySevenE.Bootstrapper
             }
 
             SaveToFile();
+        }
+
+        private void SaveToFile(string overrideFullPath = null)
+        {
+            if (!Application.isPlaying)
+            {
+                Debug.LogWarning("Can only save bootstrap in the play mode.");
+                return;
+            }
+
+            string _bootstrapRawText = _bootstrapRawTextParser.SerializeDictionary(_bootstrapSettingDictionary);
+            if (!string.IsNullOrEmpty(_bootstrapRawText))
+            {
+                string bootstrapFilePath;
+                if (string.IsNullOrEmpty(overrideFullPath))
+                {
+                    if (_bootstrapFileDirectory == BootstrapFileLocation.PersistentDataPath)
+                    {
+                        bootstrapFilePath = Path.Combine(Application.persistentDataPath, _bootstrapFileNameWithExtension);
+                    }
+                    else
+                    {
+                        bootstrapFilePath = Path.Combine(Application.streamingAssetsPath, _bootstrapFileNameWithExtension);
+                    }
+                }
+                else
+                {
+                    bootstrapFilePath = overrideFullPath;
+                }
+
+                File.WriteAllText(bootstrapFilePath, _bootstrapRawText);
+
+                Debug.Log("Bootstrap saved to <color=blue>" + bootstrapFilePath + "</color>");
+            }
         }
     }
 }
