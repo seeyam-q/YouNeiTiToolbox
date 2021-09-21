@@ -110,7 +110,7 @@ namespace FortySevenE.Bootstrapper
 
         private void OnSaveButtonClicked()
         {
-            BootstrapDictionary.Instance.UpdateBootstrapFileFromSettingPopulateList();
+            BootstrapDictionary.Instance.SaveAllSettings();
             ShowInfo("Saved!");
         }
 
@@ -130,7 +130,6 @@ namespace FortySevenE.Bootstrapper
                     if (!runtimeAppliedSetting.fieldInfo.FieldType.IsValueType)
                     {
                         _runtimeInspector.Inspect(runtimeAppliedSetting.fieldInfo.GetValue(runtimeAppliedSetting.component));
-                        Debug.Log(runtimeAppliedSetting.fieldInfo.FieldType);
                         if (typeof(IDictionary).IsAssignableFrom(runtimeAppliedSetting.fieldInfo.FieldType))
                         {
                             ShowInfo("Cannot show Dictionary at runtime. Please change it from bootstrap file.");

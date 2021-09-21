@@ -10,9 +10,9 @@ public class BootstrapDictionaryInspector : Editor
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
-        if (GUILayout.Button("Generate Bootstrap File"))
+        if (GUILayout.Button("Save Bootstrap Settings"))
         {
-            ((BootstrapDictionary)target).UpdateBootstrapFileFromSettingPopulateList();
+            ((BootstrapDictionary)target).SaveAllSettings();
         }
     }
 }
