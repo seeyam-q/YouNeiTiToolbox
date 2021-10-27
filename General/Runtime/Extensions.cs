@@ -30,4 +30,14 @@ namespace FortySevenE
                 (screenSpace.y - screenBottomLeft.y) / (screenTopRight.y - screenBottomLeft.y));
         }
     }
+
+    public static class VectorExtensions
+    {
+        public static float GetHorizontalSqrDistance(this Vector3 vectorA, Vector3 vectorB)
+        {
+            var delta = (vectorB - vectorA);
+            delta.y = 0;
+            return delta.sqrMagnitude;
+        }
+    }
 }
