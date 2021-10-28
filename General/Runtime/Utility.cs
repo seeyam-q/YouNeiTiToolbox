@@ -13,11 +13,8 @@ namespace FortySevenE
 
         public static float Ratio(float value, float min, float max, bool clamp)
         {
+            if (clamp) value = Mathf.Clamp(value, min, max);
             float delta = value - min;
-            if (clamp)
-            {
-                delta = Mathf.Max(delta, 0);
-            }
             return delta / (max - min);
         }
     }
