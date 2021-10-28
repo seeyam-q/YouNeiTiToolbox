@@ -60,13 +60,19 @@ namespace FortySevenE
 
         private void OnApplicationQuit()
         {
-            _shuttingDown = true;
+            if (Application.isPlaying)
+            {
+                _shuttingDown = true;
+            }
         }
 
 
         private void OnDestroy()
         {
-            _shuttingDown = true;
+            if (Application.isPlaying)
+            {
+                _shuttingDown = true;
+            }
         }
     }
 }
