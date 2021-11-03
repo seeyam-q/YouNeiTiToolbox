@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -8,13 +8,15 @@ using UnityEngine.Events;
 using Newtonsoft.Json;
 using System.Xml.Serialization;
 using System.Collections.ObjectModel;
+using RuntimeInspectorNamespace;
 
 namespace FortySevenE.Bootstrapper
 {
     public enum BootstrapFileLocation
     {
         StreamingAssets,
-        PersistentDataPath
+        PersistentDataPath,
+        Absolute
     }
 
     public enum BoostrapFileFormat
@@ -47,7 +49,7 @@ namespace FortySevenE.Bootstrapper
         public bool ActiveInEditor { get { return _activeInEditor; } }
 
         [SerializeField] protected BootstrapFileLocation _bootstrapFileDirectory = default;
-        [SerializeField] protected string _bootstrapFileNameWithExtension = "bootstrapSettings.json";
+        [SerializeField] protected string _bootstrapFile = "bootstrapSettings.json";
         [SerializeField] KeyCode _runtimeEditorKeyStroke = KeyCode.G;
         [SerializeField] protected BootstrapRuntimeEditor _runtimeEditor;
         public BootstrapRuntimeEditor RuntimeEditor { get { return _runtimeEditor; } }
@@ -108,7 +110,7 @@ namespace FortySevenE.Bootstrapper
                 string bootstrapFileName = GetCmdLineArg("bootstrap");
                 if (!string.IsNullOrWhiteSpace(bootstrapFileName))
                 {
-                    _bootstrapFileNameWithExtension = bootstrapFileName;
+                    _bootstrapFile = bootstrapFileName;
                 }
 
                 LoadBootstrapSettingsFromFile();
@@ -151,9 +153,57 @@ namespace FortySevenE.Bootstrapper
             }
         }
 
+        public string GetBootstrapReadAbsPath()
+        {
+            string bootstrapFilePath = "";
+            if (_bootstrapFileDirectory != BootstrapFileLocation.StreamingAssets)
+            {
+                switch (_bootstrapFileDirectory)
+                {
+                    case BootstrapFileLocation.Absolute:
+                        bootstrapFilePath = _bootstrapFile;
+                        break;
+                    case BootstrapFileLocation.PersistentDataPath:
+                        bootstrapFilePath = Path.Combine(Application.persistentDataPath, _bootstrapFile);
+                        break;
+                }
+                if (!File.Exists(bootstrapFilePath))
+                {
+                    Debug.LogWarning($"No bootstrap file {_bootstrapFile} found in {bootstrapFilePath}, reverting to Streaming Assets.");
+                    bootstrapFilePath = Path.Combine(Application.streamingAssetsPath, Path.GetFileName(_bootstrapFile));
+                }
+            }
+            else
+            {
+                bootstrapFilePath = Path.Combine(Application.streamingAssetsPath, _bootstrapFile);
+            }
+
+            return bootstrapFilePath;
+        }
+
+        public string GetBootstrapWriteAbsPath()
+        {
+            string bootstrapFilePath = "";
+
+            switch (_bootstrapFileDirectory)
+            {
+                case BootstrapFileLocation.Absolute:
+                    bootstrapFilePath = _bootstrapFile;
+                    break;
+                case BootstrapFileLocation.PersistentDataPath:
+                    bootstrapFilePath = Path.Combine(Application.persistentDataPath, _bootstrapFile);
+                    break;
+                case BootstrapFileLocation.StreamingAssets:
+                    bootstrapFilePath = Path.Combine(Application.streamingAssetsPath, _bootstrapFile);
+                    break;
+            }
+
+            return bootstrapFilePath;
+        }
+
         public void LoadBootstrapSettingsFromFile ()
         {
-            switch (Path.GetExtension(_bootstrapFileNameWithExtension).ToLower())
+            switch (Path.GetExtension(_bootstrapFile).ToLower())
             {
                 case ".json":
                     _bootstrapRawTextParser = new BootstrapJsonParser();
@@ -164,20 +214,7 @@ namespace FortySevenE.Bootstrapper
                     break;
             }
 
-            string bootstrapFilePath;
-            if (_bootstrapFileDirectory == BootstrapFileLocation.PersistentDataPath)
-            {
-                bootstrapFilePath = Path.Combine(Application.persistentDataPath, _bootstrapFileNameWithExtension);
-                if (!File.Exists(bootstrapFilePath))
-                {
-                    Debug.LogWarning($"No bootstrap file {_bootstrapFileNameWithExtension} found in Persistent Data Path, reverting to Streaming Assets.");
-                    bootstrapFilePath = Path.Combine(Application.streamingAssetsPath, _bootstrapFileNameWithExtension);
-                }
-            }
-            else
-            {
-                bootstrapFilePath = Path.Combine(Application.streamingAssetsPath, _bootstrapFileNameWithExtension);
-            }
+            string bootstrapFilePath = GetBootstrapReadAbsPath();
 
             if (File.Exists(bootstrapFilePath))
             {
@@ -185,7 +222,7 @@ namespace FortySevenE.Bootstrapper
 
                 if (_bootstrapRawTextParser.TryGetSettingDictionary(_bootstrapRawText, ref _bootstrapSettingDictionary))
                 {
-                    Debug.LogFormat("<color=green><b>{0}</b> Loaded</color>", _bootstrapFileNameWithExtension);
+                    Debug.LogFormat($"<color=green><b>{bootstrapFilePath}</b> Loaded</color>");
                     if (BootstrapLoaded != null)
                     {
                         BootstrapLoaded.Invoke();
@@ -313,7 +350,7 @@ namespace FortySevenE.Bootstrapper
                             {
                                 object settingValue = GetSetting(settingKey, fieldInfo.FieldType);
                                 fieldInfo.SetValue(component, settingValue);
-                                Debug.LogFormat("<b>{0}</b> in <b>{1}</b> has been replaced with the new value from {2}", fieldInfo.Name, component.name, _bootstrapFileNameWithExtension);
+                                Debug.LogFormat("<b>{0}</b> in <b>{1}</b> has been replaced with the new value from {2}", fieldInfo.Name, component.name, _bootstrapFile);
                                 _bootstrapRuntimeAppliedSettings.Add(new BootstrapRuntimeAppliedSetting(settingKey, component, fieldInfo));
                             }
                         }
@@ -378,21 +415,17 @@ namespace FortySevenE.Bootstrapper
             string _bootstrapRawText = _bootstrapRawTextParser.SerializeDictionary(_bootstrapSettingDictionary);
             if (!string.IsNullOrEmpty(_bootstrapRawText))
             {
-                string bootstrapFilePath;
-                if (string.IsNullOrEmpty(overrideFullPath))
+                var bootstrapFilePath = overrideFullPath == null ? GetBootstrapWriteAbsPath() : overrideFullPath;
+                var bootstrapDir = new FileInfo(bootstrapFilePath)?.Directory?.FullName;
+                if (bootstrapDir == null)
                 {
-                    if (_bootstrapFileDirectory == BootstrapFileLocation.PersistentDataPath)
-                    {
-                        bootstrapFilePath = Path.Combine(Application.persistentDataPath, _bootstrapFileNameWithExtension);
-                    }
-                    else
-                    {
-                        bootstrapFilePath = Path.Combine(Application.streamingAssetsPath, _bootstrapFileNameWithExtension);
-                    }
+                    Debug.LogError($"Bootstrap save failed - {bootstrapFilePath} not valid" );
+                    return;
                 }
-                else
+
+                if (!Directory.Exists(bootstrapDir))
                 {
-                    bootstrapFilePath = overrideFullPath;
+                    Directory.CreateDirectory(bootstrapDir);
                 }
 
                 File.WriteAllText(bootstrapFilePath, _bootstrapRawText);
