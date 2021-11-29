@@ -16,6 +16,7 @@ namespace FortySevenE.ExternalAssetLoading
         private readonly string[] _videoExtension = { ".mp4", ".mov", ".mkv", ".webm" };
         private readonly string[] _audioExtension = { ".wav", ".mp3", ".ogg", ".aac" };
         private readonly string[] _imageExtension = { ".jpg", ".png", ".tiff", ".jpeg", ".psd", ".tga" };
+        private readonly string[] _textExtension = { ".txt", ".json", ".xml" };
 
         public static event Action LocalAssetLoadingFinished;
         public static readonly string AssetKeyInstancePrefix = "[{0}]";
@@ -187,6 +188,9 @@ namespace FortySevenE.ExternalAssetLoading
                     case ExternalAssetType.Video:
                         _currentAssetLoadingWebRequest = UnityWebRequest.Get(assetInfo.absPath);
                         break;
+                    case ExternalAssetType.Text:
+                        _currentAssetLoadingWebRequest = UnityWebRequest.Get(assetInfo.absPath);
+                        break;
                 }
 
                 yield return _currentAssetLoadingWebRequest.SendWebRequest();
@@ -221,35 +225,18 @@ namespace FortySevenE.ExternalAssetLoading
                         mipmappedTexture.SetPixels(loadedTexture.GetPixels());
                         mipmappedTexture.Apply();
 
-                        if (_currentLoadingAssetCollection.preLoadedTextures.ContainsKey(assetInfo.key))
-                        {
-                            _currentLoadingAssetCollection.preLoadedTextures[assetInfo.key] = mipmappedTexture;
-                        }
-                        else
-                        {
-                            _currentLoadingAssetCollection.preLoadedTextures.Add(assetInfo.key, mipmappedTexture);
-                        }
+                        _currentLoadingAssetCollection.preLoadedTextures.CreateNewOrUpdateExisting(assetInfo.key, mipmappedTexture);
                         break;
                     case ExternalAssetType.Audio:
-                        if (_currentLoadingAssetCollection.preLoadedAudioClips.ContainsKey(assetInfo.key))
-                        {
-                            _currentLoadingAssetCollection.preLoadedAudioClips[assetInfo.key] = DownloadHandlerAudioClip.GetContent(_currentAssetLoadingWebRequest);
-                        }
-                        else
-                        {
-                            _currentLoadingAssetCollection.preLoadedAudioClips.Add(assetInfo.key, DownloadHandlerAudioClip.GetContent(_currentAssetLoadingWebRequest));
-                        }
+                        _currentLoadingAssetCollection.preLoadedAudioClips.CreateNewOrUpdateExisting(assetInfo.key, DownloadHandlerAudioClip.GetContent(_currentAssetLoadingWebRequest));
                         break;
                     case ExternalAssetType.Video:
-                        if (_currentLoadingAssetCollection.keyToAbsVideoPaths.ContainsKey(assetInfo.key))
-                        {
-                            _currentLoadingAssetCollection.keyToAbsVideoPaths[assetInfo.key] = assetInfo.absPath;
-                        }
-                        else
-                        {
-                            _currentLoadingAssetCollection.keyToAbsVideoPaths.Add(assetInfo.key, assetInfo.absPath);
-                        }
+                        _currentLoadingAssetCollection.keyToAbsVideoPaths.CreateNewOrUpdateExisting(assetInfo.key, assetInfo.absPath);
                         break;
+                    case ExternalAssetType.Text:
+                        _currentLoadingAssetCollection.preLoadedTexts.CreateNewOrUpdateExisting(assetInfo.key, _currentAssetLoadingWebRequest.downloadHandler.text);
+                        break;
+
                 }
                 _currentLoadingAssetCollection.allAvailableAssets.CreateNewOrUpdateExisting(assetInfo.key, assetInfo);
             }
@@ -273,6 +260,10 @@ namespace FortySevenE.ExternalAssetLoading
             else if (_imageExtension.Contains(assetExtension))
             {
                 return ExternalAssetType.Image;
+            }
+            else if (_textExtension.Contains(assetExtension))
+            {
+                return ExternalAssetType.Text;
             }
 
             return ExternalAssetType.Unknown;

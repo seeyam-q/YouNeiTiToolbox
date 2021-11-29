@@ -13,7 +13,8 @@ namespace FortySevenE.ExternalAssetLoading
         Unknown,
         Image,
         Video,
-        Audio
+        Audio,
+        Text
     }
 
     [Serializable]
@@ -53,6 +54,7 @@ namespace FortySevenE.ExternalAssetLoading
         public Dictionary<string, ExternalAssetInfo> allAvailableAssets = new Dictionary<string, ExternalAssetInfo>();
         public Dictionary<string, Texture2D> preLoadedTextures = new Dictionary<string, Texture2D>();
         public Dictionary<string, AudioClip> preLoadedAudioClips = new Dictionary<string, AudioClip>();
+        public Dictionary<string, string> preLoadedTexts = new Dictionary<string, string>();
         public Dictionary<string, string> keyToAbsVideoPaths = new Dictionary<string, string>();
     }
 }
