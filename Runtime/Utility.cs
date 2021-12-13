@@ -11,11 +11,23 @@ namespace FortySevenE
             return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
         }
 
+        public static float Remap(float value, Vector4 remapRatio)
+        {
+            return Remap(value, remapRatio.x, remapRatio.y, remapRatio.z, remapRatio.w);
+        }
+
         public static float Ratio(float value, float min, float max, bool clamp)
         {
             if (clamp) value = Mathf.Clamp(value, min, max);
             float delta = value - min;
             return delta / (max - min);
+        }
+
+        public static float Ratio(float value, Vector2 range, bool clamp)
+        {
+            if (clamp) value = Mathf.Clamp(value, range.x, range.y);
+            float delta = value - range.x;
+            return delta / (range.y - range.x);
         }
     }
 }
