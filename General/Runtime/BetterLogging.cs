@@ -46,7 +46,7 @@ namespace FortySevenE
             [CallerFilePath] string sourceFilePath = "",
             [CallerLineNumber] int sourceLineNumber = 0)
         {
-            if (logLevel >= X._minLogLevel)
+            if (!Application.isPlaying || logLevel >= X._minLogLevel)
             {
                 string prefix = $"[{Path.GetFileNameWithoutExtension(sourceFilePath)}->{memberName}:{sourceLineNumber})]";
                 switch(logLevel)
