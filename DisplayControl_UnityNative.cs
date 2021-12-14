@@ -21,6 +21,16 @@ namespace FortySevenE.DisplayManager
 
         public void SetPositionAndSize(int index, int left, int top, bool relativeToMonitor, int relativeMonitorIndex, int width, int height)
         {
+            if (width == 0)
+            {
+                width = Display.displays[index].systemWidth;
+            }
+
+            if (height == 0)
+            {
+                height = Display.displays[index].systemHeight;
+            }
+
             UnityEngine.Display.displays[index].SetParams(width, height, left, top);
         }
 

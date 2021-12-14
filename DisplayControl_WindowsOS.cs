@@ -115,12 +115,12 @@ namespace FortySevenE.DisplayManager
         private static readonly int SW_SHOW = 5;
 
         // SetWindoePos Flag
-        private static readonly int SWP_ASYNCWINDOWPOS = 0x4000;
+        //private static readonly int SWP_ASYNCWINDOWPOS = 0x4000;
         private static readonly int SWP_NOSIZE = 0x0001;
         private static readonly int SWP_NOMOVE = 0x0002;
         private static readonly int SWP_NOZORDER = 0x0004;
-        private static readonly int SWP_FRAMECHANGED = 0x0020;
-        private static readonly int SWP_NOSENDCHANGING = 0x0400;
+        //private static readonly int SWP_FRAMECHANGED = 0x0020;
+        //private static readonly int SWP_NOSENDCHANGING = 0x0400;
         private static readonly int SWP_NOCOPYBITS = 0x0100;
 
         private static readonly long WS_BORDER = 0x00800000L; //window with border
