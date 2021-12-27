@@ -61,12 +61,14 @@ namespace mattatz.Utils
         }
 
         [SerializeField] Gradient gradient;
-        [SerializeField] int width = 128;
-        [SerializeField] int height = 16;
-        [SerializeField] GradientDir direction;
-        [SerializeField] string fileName = "Gradient";
 
-        [MenuItem("Custom/GradientTex")]
+        static int width = 128;
+        static int height = 16;
+        static GradientDir direction;
+        static string fileName = "Gradient";
+        static string texSavePath;
+
+        [MenuItem("Tools/47E/GradientTex")]
         static void Init()
         {
             EditorWindow.GetWindow(typeof(GradientTexCreator));
@@ -109,8 +111,8 @@ namespace mattatz.Utils
 
             if (GUILayout.Button("Save"))
             {
-                string path = EditorUtility.SaveFolderPanel("Select an output path", "", "");
-                if (path.Length > 0)
+                texSavePath = EditorUtility.SaveFolderPanel("Select an output path", "", "");
+                if (texSavePath.Length > 0)
                 {
                     Texture2D tex = default;
                     switch (direction)
@@ -123,7 +125,7 @@ namespace mattatz.Utils
                             break;
                     }
                     byte[] pngData = tex.EncodeToPNG();
-                    File.WriteAllBytes(path + "/" + fileName + ".png", pngData);
+                    File.WriteAllBytes(texSavePath + "/" + fileName + ".png", pngData);
                     AssetDatabase.Refresh();
                 }
             }
