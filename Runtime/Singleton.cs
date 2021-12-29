@@ -47,8 +47,11 @@ namespace FortySevenE
 
                         if (_instance != null)
                         {
-                            // Make instance persistent.
-                            DontDestroyOnLoad( _instance);
+                            if (Application.isPlaying)
+                            {
+                                // Make instance persistent.
+                                DontDestroyOnLoad(_instance);
+                            }
                         }
                     }
 
