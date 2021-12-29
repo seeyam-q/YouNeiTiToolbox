@@ -31,7 +31,8 @@ namespace FortySevenE
     public class BetterLogging : Singleton<BetterLogging>
     {
         [SerializeField] private bool _keepLogFiles = true;
-        [SerializeField] private LogLevel _minLogLevel = LogLevel.Info;
+        [SerializeField] private LogLevel _minEditorLogLevel = LogLevel.Verbose;
+        [SerializeField] private LogLevel _minBuildLogLevel = LogLevel.Info;
 
         public static readonly string DateTimeParseFormat = "yyyy_MM_dd_T_HH_mm_ss_fff";
 
@@ -46,7 +47,8 @@ namespace FortySevenE
             [CallerFilePath] string sourceFilePath = "",
             [CallerLineNumber] int sourceLineNumber = 0)
         {
-            if (!Application.isPlaying || logLevel >= X._minLogLevel)
+            var minLogLevel = Application.isEditor ? X._minEditorLogLevel : X._minBuildLogLevel;
+            if (!Application.isPlaying || logLevel >= minLogLevel)
             {
                 string prefix = $"[{Path.GetFileNameWithoutExtension(sourceFilePath)}->{memberName}:{sourceLineNumber})]";
                 switch(logLevel)
