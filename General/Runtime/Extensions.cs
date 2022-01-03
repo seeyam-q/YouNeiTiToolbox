@@ -40,4 +40,17 @@ namespace FortySevenE
             return delta.sqrMagnitude;
         }
     }
+
+    //https://forum.unity.com/threads/get-the-layernumber-from-a-layermask.114553/#post-5890667
+    public static class LayerMaskExtensions
+    {
+        public static int FirstSetLayer(this LayerMask mask)
+        {
+            int value = mask.value;
+            if (value == 0) return 0;  // Early out
+            for (int l = 1; l < 32; l++)
+                if ((value & (1 << l)) != 0) return l;  // Bitwise
+            return -1;  // This line won't ever be reached but the compiler needs it
+        }
+    }
 }
