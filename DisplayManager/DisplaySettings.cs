@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 using System.Runtime.Serialization;
 
 namespace FortySevenE.DisplayManager
@@ -13,7 +14,8 @@ namespace FortySevenE.DisplayManager
     {
         Borderless,
         MenuBarNoResize,
-        FullMenuBar
+        FullMenuBar,
+        FullMenuBarMinimized
     }
 
 	[Serializable]
@@ -41,7 +43,7 @@ namespace FortySevenE.DisplayManager
     public class DisplaySettings 
     {
         public DisplayControlApiType apiType;
-        // resize multi displays breaks Unity's UI event system (I love Unity!). Making it optional incase UI interaction is needed on multi-display
+        [Tooltip("Multi-display runs in full screen by default. Resizing them breaks Unity's UI event system in some versions of Unity.")]
         public bool resizeMultiDisplays;
         public DisplayWindow[] displayList;
     }
