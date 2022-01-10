@@ -112,6 +112,7 @@ namespace FortySevenE.DisplayManager
         }
 
         private static readonly long GWL_STYLE = -16L;
+        private static readonly int SW_SHOWMINIMIZED = 2;
         private static readonly int SW_SHOW = 5;
 
         // SetWindoePos Flag
@@ -216,24 +217,29 @@ namespace FortySevenE.DisplayManager
                     case WindowStyle.Borderless:
                         windowStyle = WS_POPUP;
                         windowStyle &= ~(WS_CAPTION | WS_BORDER | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
+                        SetWindowStyle(index, windowStyle, show: true);
                         break;
                     case WindowStyle.MenuBarNoResize:
                         windowStyle = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+                        SetWindowStyle(index, windowStyle, show: true);
                         break;
                     case WindowStyle.FullMenuBar:
                         windowStyle = WS_CAPTION | WS_THICKFRAME | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+                        SetWindowStyle(index, windowStyle, show: true);
                         break;
-
+                    case WindowStyle.FullMenuBarMinimized:
+                        windowStyle = WS_CAPTION | WS_THICKFRAME | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+                        SetWindowStyle(index, windowStyle, show: false);
+                        break;
                 }
-                SetWindowStyle(index, windowStyle);
             }
         }
 
-        private void SetWindowStyle (int index, long windowStyle)
+        private void SetWindowStyle (int index, long windowStyle, bool show = true)
         {
             SetWindowLong(_unityDisplayPointers[index], GWL_STYLE, windowStyle);
             SetMenu(_unityDisplayPointers[index], IntPtr.Zero);
-            ShowWindowAsync(_unityDisplayPointers[index], SW_SHOW);
+            ShowWindowAsync(_unityDisplayPointers[index], show ? SW_SHOW : SW_SHOWMINIMIZED);
         }
 
         public void SetPositionAndSize(int index, int left, int top, bool relativeToMonitor, int relativeMonitorIndex, int width, int height)
@@ -250,7 +256,6 @@ namespace FortySevenE.DisplayManager
                         top = top + targetMonitor.Y;
                     }
                 }
-                //StartCoroutine(ISetPositionAndSize(index, left, top, width, height));
                 SetPositionAndSizeImpl(index, left, top, width, height);
             }
         }
@@ -268,7 +273,6 @@ namespace FortySevenE.DisplayManager
                         top = top + targetMonitor.Y;
                     }
                 }
-                //StartCoroutine(ISetPosition(index, left, top));
                 SetPositionImpl(index, left, top);
             }
         }
@@ -277,7 +281,6 @@ namespace FortySevenE.DisplayManager
         {
             if (index < _unityDisplayPointers.Count)
             {
-                //StartCoroutine(ISetSize(index, width, height));
                 SetSizeImpl(index, width, height);
             }
         }
@@ -294,53 +297,13 @@ namespace FortySevenE.DisplayManager
             return rectNative;
         }
 
-        public IEnumerator ISetPositionAndSize(int index,int x, int y, int width, int height)
-        {
-			if (Screen.fullScreen || _changingFullScreen)
-			{
-				if (Screen.fullScreen)
-				{
-					_changingFullScreen = true;
-					Screen.fullScreen = false;
-				}
-
-				yield return new WaitForSeconds(.5f);
-
-				_changingFullScreen = false;
-			}
-
-			SetPositionAndSizeImpl(index , x, y, width, height);
-        }
-
         private void SetPositionAndSizeImpl(int index, int x, int y, int width, int height)
         {
             RectNative windowRect = GetDisplayWindowRect(index);
 			if (windowRect.IsSet)
 			{
-                //if (index > 0)
-                //{
-                //    UnityEngine.Display.displays[index].SetParams(width, height, x, y);
-                //}
                 SetWindowPos(_unityDisplayPointers[index], 0, x, y, width, height, SWP_NOZORDER);
             }
-        }
-
-        public IEnumerator ISetPosition(int index, int left, int top)
-        {
-			if (Screen.fullScreen || _changingFullScreen)
-			{
-				if (Screen.fullScreen)
-				{
-					_changingFullScreen = true;
-					Screen.fullScreen = false;
-				}
-
-				yield return new WaitForSeconds(.5f);
-
-				_changingFullScreen = false;
-			}
-
-			SetPositionImpl(index ,left , top);
         }
 
         private void SetPositionImpl(int index, int left, int top)
@@ -353,24 +316,6 @@ namespace FortySevenE.DisplayManager
                     SetWindowPos(_unityDisplayPointers[index], 0, left, top, 0, 0, SWP_NOCOPYBITS | SWP_NOZORDER | SWP_NOSIZE);
                 }
             }
-        }
-
-        public IEnumerator ISetSize(int index, int width, int height)
-        {
-			if (Screen.fullScreen || _changingFullScreen)
-			{
-				if (UnityEngine.Screen.fullScreen)
-				{
-					_changingFullScreen = true;
-					Screen.fullScreen = false;
-				}
-
-				yield return new WaitForSeconds(.5f);
-
-				_changingFullScreen = false;
-			}
-
-			SetSizeImpl(index, width, height);
         }
 
         private void SetSizeImpl(int index, int width, int height)
