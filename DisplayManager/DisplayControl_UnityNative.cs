@@ -1,14 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine;
+using FortySevenE;
 
 namespace FortySevenE.DisplayManager
 {
     public class DisplayControl_UnityNative : MonoBehaviour, IDisplayControl
     {
-        Dictionary<int, DisplayWindow> _cacheDisplaySettingsAfterReload;
-
         public void RefreshDisplayPointersAfterNewDisplayAdded()
         {
 
@@ -31,7 +27,7 @@ namespace FortySevenE.DisplayManager
                 height = Display.displays[index].systemHeight;
             }
 
-            UnityEngine.Display.displays[index].SetParams(width, height, left, top);
+            Display.displays[index].SetParams(width, height, left, top);
         }
 
         public void SetSize(int index, int width, int height)
@@ -51,6 +47,9 @@ namespace FortySevenE.DisplayManager
                     break;
                 case WindowStyle.MenuBarNoResize:
                     Screen.fullScreenMode = FullScreenMode.Windowed;
+                    break;
+                case WindowStyle.FullMenuBarMinimized:
+                    BetterLogging.Log("Minimized window only works on Windows.");
                     break;
             }
         }

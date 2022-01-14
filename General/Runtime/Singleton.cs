@@ -11,7 +11,7 @@ namespace FortySevenE
     public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     {
         // Check to see if we're about to be destroyed.
-        private static bool _shuttingDown = false;
+        //private static bool _shuttingDown = false;
         private static object _lock = new object();
         private static T _instance;
 
@@ -22,12 +22,12 @@ namespace FortySevenE
         {
             get
             {
-                if (_shuttingDown)
-                {
-                    Debug.LogWarning("[Singleton] Instance '" + typeof(T) +
-                        "' already destroyed. Returning null.");
-                    return null;
-                }
+                //if (_shuttingDown)
+                //{
+                //    Debug.LogWarning("[Singleton] Instance '" + typeof(T) +
+                //        "' already destroyed. Returning null.");
+                //    return null;
+                //}
 
                 lock (_lock)
                 {
@@ -47,8 +47,11 @@ namespace FortySevenE
 
                         if (_instance != null)
                         {
-                            // Make instance persistent.
-                            DontDestroyOnLoad( _instance);
+                            if (Application.isPlaying)
+                            {
+                                // Make instance persistent.
+                                DontDestroyOnLoad(_instance);
+                            }
                         }
                     }
 
@@ -58,21 +61,21 @@ namespace FortySevenE
         }
 
 
-        private void OnApplicationQuit()
-        {
-            if (Application.isPlaying)
-            {
-                _shuttingDown = true;
-            }
-        }
+        //private void OnApplicationQuit()
+        //{
+        //    if (Application.isPlaying)
+        //    {
+        //        _shuttingDown = true;
+        //    }
+        //}
 
 
-        private void OnDestroy()
-        {
-            if (Application.isPlaying)
-            {
-                _shuttingDown = true;
-            }
-        }
+        //private void OnDestroy()
+        //{
+        //    if (Application.isPlaying)
+        //    {
+        //        _shuttingDown = true;
+        //    }
+        //}
     }
 }
