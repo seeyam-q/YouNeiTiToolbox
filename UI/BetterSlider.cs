@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using TMPro;
 
 namespace FortySevenE
 {
@@ -9,6 +10,9 @@ namespace FortySevenE
     public class BetterSlider : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler, IPointerUpHandler
     {
         public Slider Slider { get; private set; }
+        [SerializeField] TMP_Text _handleValueLabel = default;
+        [SerializeField] string _handleValueToStringFormat = "";
+
 
         public bool IsBeingPressed { get; private set; }
 
@@ -30,6 +34,10 @@ namespace FortySevenE
 
             ValueChanged?.Invoke(Slider.value);
             _cacheSliderValue = Slider.value;
+            if (_handleValueLabel != null)
+            {
+                _handleValueLabel.text = _cacheSliderValue.ToString(_handleValueToStringFormat);
+            }
         }
 
         public void OnBeginDrag(PointerEventData eventData)
