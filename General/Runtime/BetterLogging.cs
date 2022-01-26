@@ -70,6 +70,8 @@ namespace FortySevenE
 
         private void Awake()
         {
+            InitializeSingleton(persistent: true);
+
             if (_keepLogFiles)
             {
                 _logConcurrentQueue = new ConcurrentQueue<UnityLogMessage>();
