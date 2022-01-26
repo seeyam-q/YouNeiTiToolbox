@@ -47,7 +47,11 @@ namespace FortySevenE
             [CallerFilePath] string sourceFilePath = "",
             [CallerLineNumber] int sourceLineNumber = 0)
         {
-            var minLogLevel = Application.isEditor ? X._minEditorLogLevel : X._minBuildLogLevel;
+            var minLogLevel = LogLevel.Info;
+            if (Instance != null)
+            {
+                minLogLevel = Application.isEditor? X._minEditorLogLevel: X._minBuildLogLevel;
+            }
             if (!Application.isPlaying || logLevel >= minLogLevel)
             {
                 string prefix = $"[{Path.GetFileNameWithoutExtension(sourceFilePath)}->{memberName}:{sourceLineNumber})]";
