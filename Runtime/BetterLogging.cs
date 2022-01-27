@@ -28,13 +28,15 @@ namespace FortySevenE
         Error
     }
 
-    public class BetterLogging : Singleton<BetterLogging>
+    public class BetterLogging : MonoBehaviour
     {
         [SerializeField] private bool _keepLogFiles = true;
         [SerializeField] private LogLevel _minEditorLogLevel = LogLevel.Verbose;
         [SerializeField] private LogLevel _minBuildLogLevel = LogLevel.Info;
 
         public static readonly string DateTimeParseFormat = "yyyy_MM_dd_T_HH_mm_ss_fff";
+        private static BetterLogging _instance;
+        private static object _lock = new object();
 
         public string CurrentLogFileName { get; private set; }
         public string CurrentLogPath { get; private set; }
@@ -48,9 +50,9 @@ namespace FortySevenE
             [CallerLineNumber] int sourceLineNumber = 0)
         {
             var minLogLevel = LogLevel.Info;
-            if (Instance != null)
+            if (_instance != null)
             {
-                minLogLevel = Application.isEditor? X._minEditorLogLevel: X._minBuildLogLevel;
+                minLogLevel = Application.isEditor? _instance._minEditorLogLevel: _instance._minBuildLogLevel;
             }
             if (!Application.isPlaying || logLevel >= minLogLevel)
             {
@@ -72,9 +74,51 @@ namespace FortySevenE
             }
         }
 
+        static private BetterLogging GetInstance()
+        {
+            lock (_lock)
+            {
+                if (_instance == null)
+                {
+                    // Search for existing instance.
+                    _instance = FindObjectOfType<BetterLogging>();
+
+                    // Create new instance if one doesn't already exist.
+                    if (_instance == null)
+                    {
+                        // Need to create a new GameObject to attach the singleton to.
+                        var singletonObject = new GameObject();
+                        _instance = singletonObject.AddComponent<BetterLogging>();
+                        singletonObject.name = "BetterLogging";
+                        Debug.Log("<b>A BetterLogging instance was added to the scene.</b>");
+                    }
+
+                    if (_instance != null)
+                    {
+                        if (Application.isPlaying)
+                        {
+                            // Make instance persistent.
+                            DontDestroyOnLoad(_instance);
+                        }
+                    }
+                }
+
+                return _instance;
+            }
+        }
+
         private void Awake()
         {
-            InitializeSingleton(persistent: true);
+            if (_instance == null)
+            {
+                _instance = this;
+                DontDestroyOnLoad(_instance);
+            }
+            else
+            {
+                Debug.LogWarning($"Another instance of BetterLogging detected on GO {name}. Destroyed", gameObject);
+                Destroy(this);
+            }
 
             if (_keepLogFiles)
             {
