@@ -7,17 +7,17 @@ namespace FortySevenE
 {
     public interface ITexturePropertyProvider
     {
-        public Texture CurrentTexture { get; }
+        Texture CurrentTexture { get; }
     }
 
     public interface IFloatPropertyProvider
     {
-        public float FloatMaterialProperty { get; }
+        float FloatMaterialProperty { get; }
     }
 
     public interface IVectorPropertyProvider
     {
-        public Vector4 VectorMaterialProperty { get; }
+        Vector4 VectorMaterialProperty { get; }
     }
 
     public class MaterialPropertyApplier : MonoBehaviour

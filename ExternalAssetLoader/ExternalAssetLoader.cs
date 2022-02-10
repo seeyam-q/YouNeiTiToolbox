@@ -47,6 +47,11 @@ namespace FortySevenE.ExternalAssetLoading
         private GUIStyle _loadingStatusGUIStyle;
         private string _assetLoadingStatusString;
 
+        private void Awake()
+        {
+            InitializeSingleton(persistent: true);
+        }
+
         private void Start()
         {
             //Setup GUI
