@@ -181,20 +181,21 @@ namespace FortySevenE.ExternalAssetLoading
                 }
 
                 //Load assets via UnityWebRequest
+                var assetUri = new Uri(assetInfo.absPath).AbsoluteUri;
                 switch(assetInfo.type)
                 {
                     case ExternalAssetType.Image:
-                        _currentAssetLoadingWebRequest = UnityWebRequestTexture.GetTexture(assetInfo.absPath);
+                        _currentAssetLoadingWebRequest = UnityWebRequestTexture.GetTexture(assetUri);
                         break;
 
                     case ExternalAssetType.Audio:
-                        _currentAssetLoadingWebRequest = UnityWebRequestMultimedia.GetAudioClip(assetInfo.absPath, AudioType.UNKNOWN);
+                        _currentAssetLoadingWebRequest = UnityWebRequestMultimedia.GetAudioClip(assetUri, AudioType.UNKNOWN);
                         break;
                     case ExternalAssetType.Video:
-                        _currentAssetLoadingWebRequest = UnityWebRequest.Get(assetInfo.absPath);
+                        _currentAssetLoadingWebRequest = UnityWebRequest.Get(assetUri);
                         break;
                     case ExternalAssetType.Text:
-                        _currentAssetLoadingWebRequest = UnityWebRequest.Get(assetInfo.absPath);
+                        _currentAssetLoadingWebRequest = UnityWebRequest.Get(assetUri);
                         break;
                 }
 
@@ -202,7 +203,7 @@ namespace FortySevenE.ExternalAssetLoading
 
                 if (!string.IsNullOrEmpty(_currentAssetLoadingWebRequest.error))
                 {
-                    BetterLogging.Log($"{_currentAssetLoadingWebRequest.error}: Failed to load <color=blue>{_currentAssetLoadingWebRequest.url}</color>", LogLevel.Warning);
+                    BetterLogging.Log($"{_currentAssetLoadingWebRequest.error}: Failed to load <color=blue>{_currentAssetLoadingWebRequest.url}</color>: {_currentAssetLoadingWebRequest.error}", LogLevel.Warning);
                     continue;
                 }
 
