@@ -64,8 +64,12 @@ namespace FortySevenE.DisplayManager
                     {
                         if (i < Display.displays.Length)
                         {
+                            Debug.Log ($"Display[{i}] - ({Display.displays[i].systemWidth}, {Display.displays[i].systemHeight})");
+                            
                             // Ask Unity to activate more displays at the desired size
-                            Display.displays[i].Activate(UnityDisplayList[i].width, UnityDisplayList[i].height, 0);
+                            var displayWidth = UnityDisplayList[i].width;
+                            var displayHeight = UnityDisplayList[i].height;
+                            Display.displays[i].Activate(displayWidth, displayHeight, 0);
 
                             if (_displaySettings.resizeMultiDisplays)
                             {
@@ -74,17 +78,23 @@ namespace FortySevenE.DisplayManager
                                 yield return null;
                                 SetDisplayWindowStyle(i, UnityDisplayList[i].windowStyle);
                                 yield return null;
-                                SetPositionAndSize(i, UnityDisplayList[i].left, UnityDisplayList[i].top, true, relativeMonitorIndex: UnityDisplayList[i].relativeMonitorIndex, UnityDisplayList[i].width, UnityDisplayList[i].height);
+                                SetPositionAndSize(i, UnityDisplayList[i].left, UnityDisplayList[i].top, true, relativeMonitorIndex: UnityDisplayList[i].relativeMonitorIndex, displayWidth, displayHeight);
 
                             }
                         }
                     }
 
                     yield return null;
-
-                    // Activating more displays will mess up the main display for some reasons, so let's set up the main display again
-                    SetDisplayWindowStyle(0, UnityDisplayList[0].windowStyle);
-                    SetPositionAndSize(0, UnityDisplayList[0].left, UnityDisplayList[0].top, true, relativeMonitorIndex: UnityDisplayList[0].relativeMonitorIndex, UnityDisplayList[0].width, UnityDisplayList[0].height);
+#if UNITY_STANDALONE_WIN
+                    if (_displaySettings.apiType == DisplayControlApiType.OSSpecific)
+                    {
+                        // Activating more displays will mess up the main display for some reasons, so let's set up the main display again
+                        SetDisplayWindowStyle(0, UnityDisplayList[0].windowStyle);
+                        SetPositionAndSize(0, UnityDisplayList[0].left, UnityDisplayList[0].top, true,
+                            relativeMonitorIndex: UnityDisplayList[0].relativeMonitorIndex, UnityDisplayList[0].width,
+                            UnityDisplayList[0].height);
+                    }
+#endif 
                 }
             }
 #endif
