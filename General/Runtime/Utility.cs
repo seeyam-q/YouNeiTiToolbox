@@ -6,14 +6,14 @@ namespace FortySevenE
 {
     public static class Utility
     {
-        public static float Remap(float value, float from1, float to1, float from2, float to2)
+        public static float Remap(float value, float from1, float to1, float from2, float to2, bool clamp = false)
         {
-            return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
+            return Mathf.Clamp((value - from1) / (to1 - from1) * (to2 - from2) + from2, from2, to2);
         }
 
-        public static float Remap(float value, Vector4 remapRatio)
+        public static float Remap(float value, Vector4 remapRatio, bool clamp = false)
         {
-            return Remap(value, remapRatio.x, remapRatio.y, remapRatio.z, remapRatio.w);
+            return Remap(value, remapRatio.x, remapRatio.y, remapRatio.z, remapRatio.w, clamp);
         }
 
         public static float Ratio(float value, float min, float max, bool clamp)
