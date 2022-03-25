@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -41,9 +42,9 @@ namespace FortySevenE
         }
     }
 
-    //https://forum.unity.com/threads/get-the-layernumber-from-a-layermask.114553/#post-5890667
     public static class LayerMaskExtensions
     {
+        //https://forum.unity.com/threads/get-the-layernumber-from-a-layermask.114553/#post-5890667
         public static int FirstSetLayer(this LayerMask mask)
         {
             int value = mask.value;
@@ -51,6 +52,56 @@ namespace FortySevenE
             for (int l = 1; l < 32; l++)
                 if ((value & (1 << l)) != 0) return l;  // Bitwise
             return -1;  // This line won't ever be reached but the compiler needs it
+        }
+    }
+
+    public static class CollectionExtensions
+    {
+        public static Dictionary<object, List<int>> _fullCycleRandomRecord;
+        public static T FullCycleRandom<T>(this List<T> list)
+        {
+            List<int> fillValues(int count) 
+            {
+                List<int> values = new List<int>();
+                for (int i = 0; i < count; i++)
+                {
+                    values.Add(i);
+                }
+                return values;
+            }
+
+            if (list == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (list.Count == 0)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            if (_fullCycleRandomRecord == null)
+            {
+                _fullCycleRandomRecord = new Dictionary<object, List<int>>();
+            }
+
+            List<int> values;
+            if (!_fullCycleRandomRecord.ContainsKey(list))
+            {
+                values = fillValues(list.Count);
+                _fullCycleRandomRecord.Add(list, values);
+            }
+
+            _fullCycleRandomRecord.TryGetValue(list, out values);
+            if (values.Count == 0)
+            {
+                values = fillValues(list.Count);
+                _fullCycleRandomRecord[list] = values;
+            }
+            int randomIndex = UnityEngine.Random.Range(0, values.Count);
+            int randVal = values[randomIndex];
+            values.RemoveAt(randomIndex);
+            return list[randVal];
         }
     }
 }
