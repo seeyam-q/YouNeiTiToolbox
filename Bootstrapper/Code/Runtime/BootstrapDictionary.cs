@@ -51,6 +51,8 @@ namespace FortySevenE.Bootstrapper
         [SerializeField] protected BootstrapFileLocation _bootstrapFileDirectory = default;
         [SerializeField] protected string _bootstrapFile = "bootstrapSettings.json";
         [SerializeField] KeyCode _runtimeEditorKeyStroke = KeyCode.G;
+        [Tooltip("Two-touch tap X times to toggle runtime editor")]
+        [SerializeField] int _runtimeEditorTwoTouchTapCount = 3;
         [SerializeField] protected BootstrapRuntimeEditor _runtimeEditor;
         public BootstrapRuntimeEditor RuntimeEditor { get { return _runtimeEditor; } }
 
@@ -147,6 +149,15 @@ namespace FortySevenE.Bootstrapper
             if (Input.GetKeyDown(_runtimeEditorKeyStroke))
             {
                 if (RuntimeEditor != null)
+                {
+                    RuntimeEditor.enabled = !RuntimeEditor.enabled;
+                }
+            }
+
+            if (Input.touchCount == 2)
+            {
+                if (Input.GetTouch(0).phase == TouchPhase.Ended && 
+                    Input.GetTouch(0).tapCount == _runtimeEditorTwoTouchTapCount)
                 {
                     RuntimeEditor.enabled = !RuntimeEditor.enabled;
                 }
