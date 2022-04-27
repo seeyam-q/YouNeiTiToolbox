@@ -62,12 +62,12 @@ namespace FortySevenE
         {
             List<int> fillValues(int count) 
             {
-                List<int> values = new List<int>();
+                List<int> filledValues = new List<int>();
                 for (int i = 0; i < count; i++)
                 {
-                    values.Add(i);
+                    filledValues.Add(i);
                 }
-                return values;
+                return filledValues;
             }
 
             if (list == null)
