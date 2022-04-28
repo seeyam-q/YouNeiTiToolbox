@@ -1,5 +1,5 @@
 {
-    "name": "com.FortySevenE.youneiti-toolbox",
+    "name": "com.fortysvene.youneiti-toolbox",
     "version": "1.0.0",
     "unity": "2019.3",
     "displayName": "YouNeiTi Toolbox",
@@ -10,5 +10,8 @@
         "name": "Seeyam",
         "email": "seeyamq@gmail.com",
         "url": "https://seeyam-q.github.io/"
+    },
+    "dependencies": {
+        "com.unity.textmeshpro" : "3.0.6"
     }
 }
