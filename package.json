@@ -1,0 +1,18 @@
+{
+    "name": "com.FortySevenE.bootstrapper",
+    "version": "1.0.0",
+    "unity": "2019.3",
+    "displayName": "Bootstrapper",
+    "description": "Bind fields and properties of Monobehaviours objects to a JSON file. Save, load, make changes to them at runtime.",
+    "documentationUrl": "https://github.com/seeyam-q/YouNeiTiToolbox/blob/master/ReadMe.md",
+    "licensesUrl": "https://github.com/seeyam-q/YouNeiTiToolbox/blob/master/LICENSE",
+    "keywords": [
+        "Bootstrap",
+        "Runtime Editor"
+    ],
+    "author": {
+        "name": "Seeyam",
+        "email": "seeyamq@gmail.com",
+        "url": "https://seeyam-q.github.io/"
+    }
+}
