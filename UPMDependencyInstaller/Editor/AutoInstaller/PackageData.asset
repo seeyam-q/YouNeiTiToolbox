@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PackageData
   m_EditorClassIdentifier: null
   registries:
-  - name: OpenUPM
+  - name: package.openupm.com
     url: https://package.openupm.com
     scope:
     - jillejr.newtonsoft.json-for-unity.converters
@@ -24,5 +24,8 @@ MonoBehaviour:
     version: latest
     installType: 1
   - name: com.yasirkula.runtimeinspector
+    version: latest
+    installType: 1
+  - name: com.unity.nuget.newtonsoft-json
     version: latest
     installType: 1
