@@ -1,7 +1,8 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace FortySevenE
 {
@@ -155,4 +156,21 @@ namespace FortySevenE
             return valid;
         }
     }
+    
+    #if UNITY_EDITOR
+    [CustomEditor(typeof(MaterialPropertyApplier))]
+    public class MaterialPropertyApplierInspector : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            var script = target as MaterialPropertyApplier;
+
+            base.OnInspectorGUI();
+            if (!script.ValidateInterfaceReferences())
+            {
+                base.OnInspectorGUI();
+            }
+        }
+    }
+    #endif
 }

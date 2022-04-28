@@ -1,8 +1,8 @@
 {
-    "name": "FortySevenE",
+    "name": "FortySevenE.Bootstrapper",
     "rootNamespace": "",
     "references": [
-        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+        "GUID:5350fc5f2dee5894c94015dbe725cf05"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -8,7 +8,9 @@ using UnityEngine.Events;
 using Newtonsoft.Json;
 using System.Xml.Serialization;
 using System.Collections.ObjectModel;
-using RuntimeInspectorNamespace;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace FortySevenE.Bootstrapper
 {
@@ -445,4 +447,19 @@ namespace FortySevenE.Bootstrapper
             }
         }
     }
+    
+    #if UNITY_EDITOR
+    [CustomEditor(typeof(BootstrapDictionary))]
+    public class BootstrapDictionaryInspector : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+            if (GUILayout.Button("Save Bootstrap Settings"))
+            {
+                ((BootstrapDictionary)target).SaveAllSettings();
+            }
+        }
+    }
+    #endif
 }

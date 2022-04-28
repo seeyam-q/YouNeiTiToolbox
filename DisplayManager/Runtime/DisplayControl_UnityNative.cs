@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using FortySevenE;
 
 namespace FortySevenE.DisplayManager
 {
@@ -49,7 +48,7 @@ namespace FortySevenE.DisplayManager
                     Screen.fullScreenMode = FullScreenMode.Windowed;
                     break;
                 case WindowStyle.FullMenuBarMinimized:
-                    BetterLogging.Log("Minimized window only works on Windows.");
+                    Debug.LogWarning(("Minimized window only works on Windows."));
                     break;
             }
         }
