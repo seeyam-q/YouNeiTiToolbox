@@ -34,7 +34,7 @@ namespace FortySevenE
                 _instance = (T)Convert.ChangeType(this, typeof(T));
                 if (persistent) DontDestroyOnLoad(_instance);
             }
-            else
+            else if (_instance != this)
             {
                 Debug.LogWarning($"Another instance of Singleton<{typeof(T).Name}> detected on GO {name}. Destroyed", gameObject);
                 Destroy(this);
