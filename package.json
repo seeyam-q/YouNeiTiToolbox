@@ -10,8 +10,5 @@
         "name": "Seeyam",
         "email": "seeyamq@gmail.com",
         "url": "https://seeyam-q.github.io/"
-    },
-    "dependencies": {
-        "com.unity.textmeshpro" : "3.0.6"
     }
 }

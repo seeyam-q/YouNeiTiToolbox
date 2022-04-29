@@ -7,11 +7,14 @@ using TMPro;
 namespace FortySevenE
 {
     [RequireComponent(typeof(Slider))]
-    public class BetterSlider : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler, IPointerUpHandler
+    public class BetterSlider : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler,
+        IPointerUpHandler
     {
         public Slider Slider { get; private set; }
+#if TMP_PRESENT
         [SerializeField] TMP_Text _handleValueLabel = default;
         [SerializeField] string _handleValueToStringFormat = "";
+#endif
 
 
         public bool IsBeingPressed { get; private set; }
@@ -34,10 +37,12 @@ namespace FortySevenE
 
             ValueChanged?.Invoke(Slider.value);
             _cacheSliderValue = Slider.value;
+#if TMP_PRESENT
             if (_handleValueLabel != null)
             {
                 _handleValueLabel.text = _cacheSliderValue.ToString(_handleValueToStringFormat);
             }
+#endif
         }
 
         public void OnBeginDrag(PointerEventData eventData)
