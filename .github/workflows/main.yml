@@ -34,6 +34,9 @@ jobs:
           
           git subtree split -P "DisplayManager" -b upm-display-manager
           git push -u origin upm-display-manager
+
+          git subtree split -P "ExternalAssetLoader" -b upm-external-asset-loader
+          git push -u origin upm-external-asset-loader
           
           git subtree split -P "General" -b upm-youneiti-toolbox
           git push -u origin upm-youneiti-toolbox
