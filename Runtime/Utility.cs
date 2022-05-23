@@ -8,6 +8,11 @@ namespace FortySevenE
     {
         public static float Remap(float value, float from1, float to1, float from2, float to2, bool clamp = false)
         {
+            if (to1 - from1 == 0)
+            {
+                return value;
+            }
+            
             var remappedValue = (value - from1) / (to1 - from1) * (to2 - from2) + from2;
             if (clamp)
             {
@@ -24,6 +29,11 @@ namespace FortySevenE
 
         public static float Ratio(float value, float min, float max, bool clamp)
         {
+            if (max - min == 0)
+            {
+                return 0;
+            }
+            
             if (clamp) value = Mathf.Clamp(value, min, max);
             float delta = value - min;
             return delta / (max - min);
@@ -31,6 +41,11 @@ namespace FortySevenE
 
         public static float Ratio(float value, Vector2 range, bool clamp)
         {
+            if (range.y - range.x == 0)
+            {
+                return 0;
+            }
+            
             if (clamp) value = Mathf.Clamp(value, range.x, range.y);
             float delta = value - range.x;
             return delta / (range.y - range.x);
