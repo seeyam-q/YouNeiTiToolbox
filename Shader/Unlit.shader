@@ -11,6 +11,7 @@ Shader "47E/Unlit"
 
         [Header(Properties)]
         [HDR]_Color ("Main Color", Color) = (1,1,1,1)
+        _AlphaMultiplier ("Alpha Multiplier", Float) = 1
         _MainTex ("Main Texture", 2D) = "white" {}
         [Toggle(ALPHA_CLIP)] _UseAlphaClip ("Use Alpha Clip", Float) = 0
         _AlphaClip ("Alpha Clip", Float) = 0.01
@@ -53,9 +54,10 @@ Shader "47E/Unlit"
             };
 
             sampler2D _MainTex;
-            float4 _MainTex_ST;
-            float4 _Color;
-            float _AlphaClip;
+            fixed4 _MainTex_ST;
+            fixed4 _Color;
+            fixed _AlphaClip;
+            fixed _AlphaMultiplier;
 
             v2f vert(appdata v)
             {
@@ -75,6 +77,7 @@ Shader "47E/Unlit"
                 
                 fixed4 col = tex2D(_MainTex, i.uv);
                 col = col * _Color;
+                col.a *= _AlphaMultiplier;
                 #ifdef ALPHA_CLIP
                 clip(col.a - _AlphaClip);
                 #endif
