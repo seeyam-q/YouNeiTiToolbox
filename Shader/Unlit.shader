@@ -4,7 +4,7 @@ Shader "47E/Unlit"
     {
         [Header(Config)]
         [Enum(UnityEngine.Rendering.CullMode)] _Culling("Culling", Float) = 2
-        _ZWrite ("ZWrite", Float) = 1
+        [Toggle] _ZWrite ("ZWrite", Float) = 1
         [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest("ZTest", Float) = 4
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("_SrcBlend", Float) = 1.0
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("_DstBlend", Float) = 0.0
