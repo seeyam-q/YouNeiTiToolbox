@@ -1,4 +1,4 @@
-// modified from https://github.com/Deadcows/MyBox/blob/master/Types/Singleton.cs
+// From by https://hextantstudios.com/unity-singletons/
 
 using System;
 using UnityEngine;
@@ -10,12 +10,14 @@ namespace FortySevenE
         //backward compatibility for old singleton naming
         public static T X => Instance;
 
+        private static bool _warnIfNull;
+
         public static T Instance
         {
             get
             {
                 if (_instance == null) _instance = FindObjectOfType<T>();
-                if (_instance == null) Debug.LogError("Singleton of type : " + typeof(T).Name + " not found on scene");
+                if (_warnIfNull && _instance == null) Debug.LogError("Singleton of type : " + typeof(T).Name + " not found on scene");
 
                 return _instance;
             }
@@ -27,12 +29,13 @@ namespace FortySevenE
         /// Use this function to cache instance and destroy duplicate objects.
         /// Also use DontDestroyOnLoad if "persistent" is not set to false
         /// </summary>
-        protected void InitializeSingleton(bool persistent = true)
+        protected void InitializeSingleton(bool persistent = true, bool warnIfNull = false)
         {
             if (_instance == null)
             {
                 _instance = (T)Convert.ChangeType(this, typeof(T));
                 if (persistent) DontDestroyOnLoad(_instance);
+                _warnIfNull = warnIfNull;
             }
             else if (_instance != this)
             {
@@ -40,5 +43,8 @@ namespace FortySevenE
                 Destroy(this);
             }
         }
+        
+        // Clear the instance field when destroyed.
+        protected virtual void OnDestroy() => _instance = null;
     }
 }
