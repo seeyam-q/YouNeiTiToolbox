@@ -12,7 +12,7 @@ Shader "47E/ProceduralWorldspaceGrid"
         _AlphaClip ("Alpha Clip", Float) = 0.01
         
         [Header(Properties)]
-        [HDR] _GridColor ("Fill Color", Color) = (1, 1, 1, 1.0) 
+        [HDR] _GridColor ("Grid Color", Color) = (1, 1, 1, 1.0) 
         [HDR] _FillColor ("Fill Color", Color) = (1, 0.0, 0.0, 1.0) 
         _GridScale ("Grid Scale", Range(1, 32)) = 2
         _Width ("Width", Range(0, 0.75)) = 0.1
@@ -80,7 +80,7 @@ Shader "47E/ProceduralWorldspaceGrid"
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex);
                 o.worldNormal = UnityObjectToWorldNormal(v.normal);
                 #ifdef DISTANCE_FADE
-                half l = min(1.0, max(0.0, (length(ObjSpaceViewDir(v.vertex)) - _DistanceClose) / (_DistanceFar - _DistanceClose)));
+                half l = min(1.0, max(0.0, (length(WorldSpaceViewDir(v.vertex)) - _DistanceClose) / (_DistanceFar - _DistanceClose)));
                 #else
                 half l = 0;
                 #endif
@@ -102,7 +102,7 @@ Shader "47E/ProceduralWorldspaceGrid"
                 gridPos = max (fracSquare(gridPos), fracSquare(-gridPos));
                 fixed high1 = 1 - _Width;
                 fixed low1 = high1 - _Smoothness;
-                half4 col = (gridPos - low1) / (high1 - low1) * _GridColor;
+                half4 col = (gridPos - low1) / (high1 - low1);
 
                 col = clamp(col, 0, 1);
 
@@ -114,9 +114,8 @@ Shader "47E/ProceduralWorldspaceGrid"
                 
                 col.rgb *= (1 - normalFade);
                 col.a = max (max(col.r, col.g), col.b);
-                col.rgb = col.a;
-                col += _FillColor;
-                col.a *= i.color.a;
+                col = lerp(_FillColor, _GridColor, col.a);
+                col.a *= i.color.a; //object vertex alpha + distance fade
                 #ifdef ALPHA_CLIP
                 clip(col.a - _AlphaClip);
                 #endif
