@@ -6,8 +6,12 @@ Shader "47E/Unlit"
         [Enum(UnityEngine.Rendering.CullMode)] _Culling("Culling", Float) = 2
         [Toggle] _ZWrite ("ZWrite", Float) = 1
         [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest("ZTest", Float) = 4
-        [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("_SrcBlend", Float) = 1.0
-        [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("_DstBlend", Float) = 0.0
+    	[Enum(UnityEngine.Rendering.BlendOp)] _ColorBlendOp ("ColorBlendOp", Float) = 0.0
+    	[Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("SrcColorBlend", Float) = 1.0
+    	[Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("DstColorBlend", Float) = 0.0
+        [Enum(UnityEngine.Rendering.BlendOp)] _AlphaBlendOp ("AlphaBlendOp", Float) = 0.0
+        [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlendAlpha ("SrcAlphaBlend", Float) = 1.0
+        [Enum(UnityEngine.Rendering.BlendMode)] _DstBlendAlpha ("DstAlphaBlend", Float) = 0.0
         
         [Header(Stencil)]
         [IntRange] _StencilRef("Stencil Ref Value", Range(0, 255)) = 0
@@ -24,18 +28,13 @@ Shader "47E/Unlit"
     }
     SubShader
     {
-        Tags
-        {
-            "RenderType"="Opaque"
-        }
-        LOD 100
-
-        Pass
+	    Pass
         {
             ZWrite [_ZWrite]
             ZTest [_ZTest]
             Cull [_Culling]
-            Blend [_SrcBlend] [_DstBlend]
+        	BlendOp [_ColorBlendOp], [_AlphaBlendOp]
+            Blend [_SrcBlend] [_DstBlend], [_SrcBlendAlpha] [_DstBlendAlpha]
 
 			Stencil
 			{
