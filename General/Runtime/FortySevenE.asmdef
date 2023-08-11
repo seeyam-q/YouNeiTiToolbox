@@ -22,6 +22,16 @@
             "name": "com.unity.timeline",
             "expression": "1.0.0",
             "define": "TIMELINE_PRESENT"
+        },
+        {
+            "name": "com.unity.render-pipelines.universal",
+            "expression": "0.0",
+            "define": "URP_PRESENT"
+        },
+        {
+            "name": "com.unity.render-pipelines.high-definition",
+            "expression": "0.0",
+            "define": "HDRP_PRESENT"
         }
     ],
     "noEngineReferences": false
