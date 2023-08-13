@@ -7,7 +7,6 @@ using UnityEngine.Events;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 using System.Threading.Tasks;
-using UnityEditor.PackageManager.UI;
 
 namespace FortySevenE
 {
