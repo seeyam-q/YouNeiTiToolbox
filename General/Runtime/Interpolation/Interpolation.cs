@@ -57,19 +57,16 @@ namespace FortySevenE
         public Renderer targetRenderer;
         public Material targetMaterial;
         public int rendererMaterialIndex;
-        
-        [Header("Color")]
-        public string rendererColorKeyword = "";
+
+        [Header("Color")] public string rendererColorKeyword = "";
         [ColorUsage(true, true)] public Color hideColor;
         [ColorUsage(true, true)] public Color showColor;
 
-        [Header("Float")]
-        public string rendererFloatKeyword = "";
+        [Header("Float")] public string rendererFloatKeyword = "";
         public float hideFloat;
         public float showFloat;
 
-        [Header("Tex Sequence")] 
-        public string textureKeyword;
+        [Header("Tex Sequence")] public string textureKeyword;
         public Texture[] textureSequence;
 
         public int CurrentTexSequenceIndex
@@ -102,8 +99,8 @@ namespace FortySevenE
             if (!string.IsNullOrEmpty(textureKeyword))
             {
                 if (textureSequence != null && textureSequence.Length > 0 && textureSequence[CurrentTexSequenceIndex])
-                { 
-                    m.SetTexture(GlobalHashMap.GetShaderHash(textureKeyword), textureSequence[CurrentTexSequenceIndex]);   
+                {
+                    m.SetTexture(GlobalHashMap.GetShaderHash(textureKeyword), textureSequence[CurrentTexSequenceIndex]);
                 }
             }
         }
@@ -143,7 +140,8 @@ namespace FortySevenE
                         targetRenderer.GetPropertyBlock(properties);
                         if (!string.IsNullOrEmpty(rendererColorKeyword))
                         {
-                            properties.SetColor(GlobalHashMap.GetShaderHash(rendererColorKeyword), Color.Lerp(hideColor, showColor, shaderAnimAlpha));
+                            properties.SetColor(GlobalHashMap.GetShaderHash(rendererColorKeyword),
+                                Color.Lerp(hideColor, showColor, shaderAnimAlpha));
                         }
 
                         if (!string.IsNullOrEmpty(rendererFloatKeyword))
@@ -151,12 +149,14 @@ namespace FortySevenE
                             var currentFloat = Mathf.Lerp(hideFloat, showFloat, shaderAnimAlpha);
                             properties.SetFloat(GlobalHashMap.GetShaderHash(rendererFloatKeyword), currentFloat);
                         }
-                        
+
                         if (!string.IsNullOrEmpty(textureKeyword))
                         {
-                            if (textureSequence != null && textureSequence.Length > 0 && textureSequence[CurrentTexSequenceIndex])
+                            if (textureSequence != null && textureSequence.Length > 0 &&
+                                textureSequence[CurrentTexSequenceIndex])
                             {
-                                properties.SetTexture(GlobalHashMap.GetShaderHash(textureKeyword), textureSequence[CurrentTexSequenceIndex]);   
+                                properties.SetTexture(GlobalHashMap.GetShaderHash(textureKeyword),
+                                    textureSequence[CurrentTexSequenceIndex]);
                             }
                         }
 
@@ -181,15 +181,15 @@ namespace FortySevenE
     public class TransformInterpolation : BaseInterpolation
     {
         public Transform target;
-        public Axis posUpdateAxis = Axis.X | Axis.Y | Axis.Z;
+        public Axis posUpdateAxis = Axis.None;
         public Vector3 hideLocalPos = default;
         public Vector3 showLocalPos = default;
 
-        public Axis rotUpdateAxis = Axis.X | Axis.Y | Axis.Z;
+        public bool updateRotation = false;
         public Quaternion hideLocalRot = default;
         public Quaternion showLocalRot = default;
 
-        public Axis scaleUpdateAxis = Axis.X | Axis.Y | Axis.Z;
+        public Axis scaleUpdateAxis = Axis.None;
         public Vector3 hideLocalScale = default;
         public Vector3 showLocalScale = default;
 
@@ -226,14 +226,9 @@ namespace FortySevenE
                     );
             }
 
-            if (rotUpdateAxis != Axis.None)
+            if (updateRotation)
             {
-                var targetEuler = Quaternion
-                    .Lerp(hideLocalRot, showLocalRot, transformAlpha)
-                    .eulerAngles;
-
-                target.eulerAngles = UpdateVector3(target.eulerAngles, targetEuler,
-                    rotUpdateAxis);
+                target.localRotation = Quaternion.Slerp(hideLocalRot, showLocalRot, transformAlpha);
             }
 
             if (scaleUpdateAxis != Axis.None)
