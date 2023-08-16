@@ -123,4 +123,80 @@ namespace FortySevenE
             return shuffledList;
         }
     }
+
+    public static class RendererExtensions
+    {
+        private static bool UseMaterialPropertyBlock
+        {
+            get
+            {
+                bool useMaterialPropertyBlock = false;
+#if URP_PRESENT || HDRP_PRESENT
+                useMaterialPropertyBlock = false;
+#endif
+                if (!Application.isPlaying) useMaterialPropertyBlock = true;
+                return useMaterialPropertyBlock;
+            }
+        }
+        
+        public static void SetTexture(this Renderer targetRenderer, string keyword, Texture texture, int materialIndex = 0)
+        {
+            if (UseMaterialPropertyBlock)
+            {
+                var properties = new MaterialPropertyBlock();
+                targetRenderer.GetPropertyBlock(properties);
+                properties.SetTexture(GlobalHashMap.GetShaderHash(keyword), texture);
+                targetRenderer.SetPropertyBlock(properties);
+            }
+            else
+            {
+                targetRenderer.materials[materialIndex].SetTexture(GlobalHashMap.GetShaderHash(keyword), texture);
+            }
+        }
+        
+        public static void SetFloat(this Renderer targetRenderer, string keyword, float floatValue, int materialIndex = 0)
+        {
+            if (UseMaterialPropertyBlock)
+            {
+                var properties = new MaterialPropertyBlock();
+                targetRenderer.GetPropertyBlock(properties);
+                properties.SetFloat(GlobalHashMap.GetShaderHash(keyword), floatValue);
+                targetRenderer.SetPropertyBlock(properties);
+            }
+            else
+            {
+                targetRenderer.materials[materialIndex].SetFloat(GlobalHashMap.GetShaderHash(keyword), floatValue);
+            }
+        }
+        
+        public static void SetVector(this Renderer targetRenderer, string keyword, Vector4 vectorValue, int materialIndex = 0)
+        {
+            if (UseMaterialPropertyBlock)
+            {
+                var properties = new MaterialPropertyBlock();
+                targetRenderer.GetPropertyBlock(properties);
+                properties.SetVector(GlobalHashMap.GetShaderHash(keyword), vectorValue);
+                targetRenderer.SetPropertyBlock(properties);
+            }
+            else
+            {
+                targetRenderer.materials[materialIndex].SetVector(GlobalHashMap.GetShaderHash(keyword), vectorValue);
+            }
+        }
+        
+        public static void SetColor(this Renderer targetRenderer, string keyword, Color colorValue, int materialIndex = 0)
+        {
+            if (UseMaterialPropertyBlock)
+            {
+                var properties = new MaterialPropertyBlock();
+                targetRenderer.GetPropertyBlock(properties);
+                properties.SetColor(GlobalHashMap.GetShaderHash(keyword), colorValue);
+                targetRenderer.SetPropertyBlock(properties);
+            }
+            else
+            {
+                targetRenderer.materials[materialIndex].SetColor(GlobalHashMap.GetShaderHash(keyword), colorValue);
+            }
+        }
+    }
 }
