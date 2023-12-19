@@ -198,5 +198,20 @@ namespace FortySevenE
                 targetRenderer.materials[materialIndex].SetColor(GlobalHashMap.GetShaderHash(keyword), colorValue);
             }
         }
+
+        public static void SetMatrix(this Renderer targetRenderer, string keyword, Matrix4x4 matrixValue, int materialIndex = 0)
+        {
+            if (UseMaterialPropertyBlock)
+            {
+                var properties = new MaterialPropertyBlock();
+                targetRenderer.GetPropertyBlock(properties);
+                properties.SetMatrix(GlobalHashMap.GetShaderHash(keyword), matrixValue);
+                targetRenderer.SetPropertyBlock(properties);
+            }
+            else
+            {
+                targetRenderer.materials[materialIndex].SetMatrix(GlobalHashMap.GetShaderHash(keyword), matrixValue);
+            }
+        }
     }
 }
