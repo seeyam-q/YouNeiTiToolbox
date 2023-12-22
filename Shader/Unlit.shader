@@ -46,11 +46,12 @@ Shader "47E/Unlit"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile_instancing
 
             #include "UnityCG.cginc"
 
-            #pragma shader_feature ALPHA_CLIP
-            #pragma shader_feature VERTEX_COLOR
+            #pragma multi_compile ALPHA_CLIP
+            #pragma multi_compile VERTEX_COLOR
 
             struct appdata
             {
@@ -64,24 +65,32 @@ Shader "47E/Unlit"
 
             struct v2f
             {
+            	float4 vertex : SV_POSITION;
                 float2 uv : TEXCOORD0;
-                float4 vertex : SV_POSITION;
 				#ifdef VERTEX_COLOR
 				fixed4 color : COLOR;
 				#endif
                 UNITY_VERTEX_OUTPUT_STEREO
             };
-
+            
+			UNITY_INSTANCING_BUFFER_START(UnityPerMaterial)
             sampler2D _MainTex;
-            fixed4 _MainTex_ST;
+            float4 _MainTex_ST;
             fixed4 _Color;
+            #ifdef ALPHA_CLIP
             fixed _AlphaClip;
+            #endif
             fixed _AlphaMultiplier;
+            UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
 
             v2f vert(appdata v)
             {
                 v2f o;
                 UNITY_SETUP_INSTANCE_ID(v);
+            	//https://forum.unity.com/threads/gpu-instancing-with-single-pass-stereo-rendering.1222533/
+            	//#ifdef UNITY_STEREO_INSTANCING_ENABLED
+				//InstanceID = InstanceID/2;
+				//#endif
                 UNITY_INITIALIZE_OUTPUT(v2f, o);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
