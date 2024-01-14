@@ -9,6 +9,7 @@ namespace FortySevenE
         public Vector3 position;
         public Quaternion rotation;
         public Vector3 scale;
+        public Space SetSpace { get; private set; }
 
         public static TransformTRS GetTransformTRS(Transform transform, Space space = Space.Self)
         {
@@ -27,6 +28,8 @@ namespace FortySevenE
                     break;
             }
 
+            trs.SetSpace = space;
+
             return trs;
         }
 
@@ -42,7 +45,9 @@ namespace FortySevenE
                 case Space.World:
                     transform.position = position;
                     transform.rotation = rotation;
-                    transform.localScale = scale;
+                    //https://discussions.unity.com/t/reading-and-setting-an-objects-global-scale-with-transform-functions/143857/3
+                    transform.localScale = Vector3.one;
+                    transform.localScale = new Vector3 (scale.x/transform.lossyScale.x, scale.y/transform.lossyScale.y, scale.z/transform.lossyScale.z);
                     break;
             }
         }
