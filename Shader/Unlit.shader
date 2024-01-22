@@ -73,15 +73,19 @@ Shader "47E/Unlit"
                 UNITY_VERTEX_OUTPUT_STEREO
             };
             
+#if !SHADER_API_METAL // Somehow MainTex sampler doesnt complie on Metal when using instancing, dsiable for now
 			UNITY_INSTANCING_BUFFER_START(UnityPerMaterial)
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
-            fixed4 _Color;
-            #ifdef ALPHA_CLIP
-            fixed _AlphaClip;
-            #endif
-            fixed _AlphaMultiplier;
-            UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
+#endif
+          sampler2D _MainTex;
+          float4 _MainTex_ST;
+          fixed4 _Color;
+          #ifdef ALPHA_CLIP
+          fixed _AlphaClip;
+          #endif
+          fixed _AlphaMultiplier;
+#if !SHADER_API_METAL
+          UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
+#endif
 
             v2f vert(appdata v)
             {
