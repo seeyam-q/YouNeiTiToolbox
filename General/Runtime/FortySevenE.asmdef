@@ -3,7 +3,9 @@
     "rootNamespace": "",
     "references": [
         "GUID:6055be8ebefd69e48b49212b09b47b2f",
-        "GUID:f06555f75b070af458a003d92f9efb00"
+        "GUID:f06555f75b070af458a003d92f9efb00",
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:2665a8d13d1b3f18800f46e256720795"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -32,6 +34,11 @@
             "name": "com.unity.render-pipelines.high-definition",
             "expression": "0.0",
             "define": "HDRP_PRESENT"
+        },
+        {
+            "name": "com.unity.burst",
+            "expression": "1.6.6",
+            "define": "BURST_PRESENT"
         }
     ],
     "noEngineReferences": false
