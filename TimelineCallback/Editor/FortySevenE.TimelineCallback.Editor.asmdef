@@ -1,0 +1,21 @@
+{
+    "name": "FortySevenE.TimelineCallback.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:de45cafea229e5d42a379beb9526f89b",
+        "GUID:02f771204943f4a40949438e873e3eff",
+        "GUID:f06555f75b070af458a003d92f9efb00",
+        "GUID:fa350bda189d3474f9e3daebcd57b68f"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
