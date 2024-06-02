@@ -1,0 +1,9 @@
+{
+  "name": "com.ms.fastreflection",
+  "displayName": "FastReflection",
+  "version": "0.0.1",
+  "description": "FastReflection",
+  "keywords": [],
+  "dependencies": {
+  }
+}

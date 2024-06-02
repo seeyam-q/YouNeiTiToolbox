@@ -37,6 +37,9 @@ jobs:
 
           git subtree split -P "ExternalAssetLoader" -b upm-external-asset-loader
           git push -u origin upm-external-asset-loader --force
+
+          git subtree split -P "TimelineCallback" -b upm-timeline-callback
+          git push -u origin upm-timeline-callback --force
           
           git subtree split -P "General" -b upm-youneiti-toolbox
           git push -u origin upm-youneiti-toolbox --force
