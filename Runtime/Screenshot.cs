@@ -25,7 +25,20 @@ namespace FortySevenE
         
         private void Update() 
         {
-            if (Input.GetKeyDown(KeyCode.P))
+#if ENABLE_INPUT_SYSTEM
+            if (UnityEngine.InputSystem.Keyboard.current.rightBracketKey.wasPressedThisFrame)
+#else
+            if (Input.GetKeyDown(KeyCode.RightBracket))
+#endif
+            {
+                CaptureCameraRenderTarget();
+            }
+            
+#if ENABLE_INPUT_SYSTEM
+            if (UnityEngine.InputSystem.Keyboard.current.leftBracketKey.wasPressedThisFrame)
+#else
+            if (Input.GetKeyDown(KeyCode.LeftBracket))
+#endif
             {
                 ScreenCaptureSimple();
             }
@@ -42,6 +55,7 @@ namespace FortySevenE
         public void ScreenCaptureSimple()
         {
             ScreenCapture.CaptureScreenshot(FilePath);
+            Debug.Log($"[{GetType().Name}] Simple screenshot saved at <b>{FilePath}</b>");
         }
 
         private IEnumerator c_CapctureCameraRenderTarget()
@@ -100,6 +114,7 @@ namespace FortySevenE
             bytes = ScreenshotTexture.EncodeToPNG();
             
             File.WriteAllBytes(FilePath, bytes);
+            Debug.Log($"[{GetType().Name}] Camera texture saved at <b>{FilePath}</b>");
         }
     }
 }
