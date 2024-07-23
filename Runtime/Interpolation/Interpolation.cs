@@ -65,6 +65,10 @@ namespace FortySevenE
         [Header("Float")] public string rendererFloatKeyword = "";
         public float hideFloat;
         public float showFloat;
+        
+        [Header("Vector")] public string rendererVectorKeyword = "";
+        public Vector4 hideVector;
+        public Vector4 showVector;
 
         [Header("Tex Sequence")] public string textureKeyword;
         public Texture[] textureSequence;
@@ -94,6 +98,12 @@ namespace FortySevenE
             {
                 var currentFloat = Mathf.Lerp(hideFloat, showFloat, alpha);
                 m.SetFloat(GlobalHashMap.GetShaderHash(rendererFloatKeyword), currentFloat);
+            }
+            
+            if (!string.IsNullOrEmpty(rendererVectorKeyword))
+            {
+                var currentValue = Vector4.Lerp(hideVector, showVector, alpha);
+                m.SetVector(GlobalHashMap.GetShaderHash(rendererVectorKeyword), currentValue);
             }
 
             if (!string.IsNullOrEmpty(textureKeyword))
@@ -148,6 +158,12 @@ namespace FortySevenE
                         {
                             var currentFloat = Mathf.Lerp(hideFloat, showFloat, shaderAnimAlpha);
                             properties.SetFloat(GlobalHashMap.GetShaderHash(rendererFloatKeyword), currentFloat);
+                        }
+                        
+                        if (!string.IsNullOrEmpty(rendererVectorKeyword))
+                        {
+                            var currentVector = Vector4.Lerp(hideVector, showVector, shaderAnimAlpha);
+                            properties.SetVector(GlobalHashMap.GetShaderHash(rendererVectorKeyword), currentVector);
                         }
 
                         if (!string.IsNullOrEmpty(textureKeyword))
