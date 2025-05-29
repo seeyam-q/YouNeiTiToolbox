@@ -16,7 +16,14 @@ namespace FortySevenE
         {
             get
             {
-                if (_instance == null) _instance = FindObjectOfType<T>();
+                if (_instance == null)
+                {
+#if UNITY_6000_0_OR_NEWER
+                    _instance = FindFirstObjectByType<T>(FindObjectsInactive.Include);
+#else
+                    _instance = FindObjectOfType<T>(includeInactive: true);
+#endif
+                }
                 if (_warnIfNull && _instance == null) Debug.LogError("Singleton of type : " + typeof(T).Name + " not found on scene");
 
                 return _instance;
@@ -45,6 +52,9 @@ namespace FortySevenE
         }
         
         // Clear the instance field when destroyed.
-        protected virtual void OnDestroy() => _instance = null;
+        protected virtual void OnDestroy()
+        {
+            if (_instance == this) _instance = null;
+        }
     }
 }
