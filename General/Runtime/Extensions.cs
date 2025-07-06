@@ -2,21 +2,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace FortySevenE
 {
     public static class DictionaryExtensions
     {
-		public static void CreateNewOrUpdateExisting<TKey, TValue>( this IDictionary<TKey, TValue> map, TKey key, TValue value)
-		{
-			map[key] = value;
-		}
-	}
+        public static void CreateNewOrUpdateExisting<TKey, TValue>(this IDictionary<TKey, TValue> map, TKey key,
+            TValue value)
+        {
+            map[key] = value;
+        }
+    }
 
     public static class RectTransformExtensions
     {
         // Bottom Left is (0, 0) , and Top Right is (1, 1)
-        public static Vector2 ScreenSpaceToUv(this RectTransform rectTransform, Vector3 screenSpace, Camera referenceCamera = null)
+        public static Vector2 ScreenSpaceToUv(this RectTransform rectTransform, Vector3 screenSpace,
+            Camera referenceCamera = null)
         {
             Vector3[] worldSpaceRectCorners = new Vector3[4];
             rectTransform.GetWorldCorners(worldSpaceRectCorners);
@@ -27,7 +30,7 @@ namespace FortySevenE
             var screenTopRight = uiCamera.WorldToScreenPoint(worldSpaceRectCorners[2]);
 
             return new Vector2(
-                (screenSpace.x - screenBottomLeft.x) / (screenTopRight.x - screenBottomLeft.x), 
+                (screenSpace.x - screenBottomLeft.x) / (screenTopRight.x - screenBottomLeft.x),
                 (screenSpace.y - screenBottomLeft.y) / (screenTopRight.y - screenBottomLeft.y));
         }
     }
@@ -48,25 +51,28 @@ namespace FortySevenE
         public static int FirstSetLayer(this LayerMask mask)
         {
             int value = mask.value;
-            if (value == 0) return 0;  // Early out
+            if (value == 0) return 0; // Early out
             for (int l = 1; l < 32; l++)
-                if ((value & (1 << l)) != 0) return l;  // Bitwise
-            return -1;  // This line won't ever be reached but the compiler needs it
+                if ((value & (1 << l)) != 0)
+                    return l; // Bitwise
+            return -1; // This line won't ever be reached but the compiler needs it
         }
     }
 
     public static class CollectionExtensions
     {
         public static Dictionary<object, List<int>> _fullCycleRandomRecord;
+
         public static T FullCycleRandom<T>(this List<T> list)
         {
-            List<int> fillValues(int count) 
+            List<int> fillValues(int count)
             {
                 List<int> filledValues = new List<int>();
                 for (int i = 0; i < count; i++)
                 {
                     filledValues.Add(i);
                 }
+
                 return filledValues;
             }
 
@@ -98,26 +104,30 @@ namespace FortySevenE
                 values = fillValues(list.Count);
                 _fullCycleRandomRecord[list] = values;
             }
+
             int randomIndex = UnityEngine.Random.Range(0, values.Count);
             int randVal = values[randomIndex];
             values.RemoveAt(randomIndex);
             return list[randVal];
         }
-        public static List<T> Shuffle<T>(this IList<T> list)  
-        {  
+
+        public static List<T> Shuffle<T>(this IList<T> list)
+        {
             var rng = new System.Random();
             var shuffledList = new List<T>();
             foreach (var item in list)
             {
                 shuffledList.Add(item);
             }
-            int n = shuffledList.Count;  
-            while (n > 1) {  
-                n--;  
-                int k = rng.Next(n + 1);  
-                T value = shuffledList[k];  
-                shuffledList[k] = shuffledList[n];  
-                shuffledList[n] = value;  
+
+            int n = shuffledList.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1);
+                T value = shuffledList[k];
+                shuffledList[k] = shuffledList[n];
+                shuffledList[n] = value;
             }
 
             return shuffledList;
@@ -130,16 +140,18 @@ namespace FortySevenE
         {
             get
             {
+                if (!Application.isPlaying) return true;
+
                 bool useMaterialPropertyBlock = false;
 #if URP_PRESENT || HDRP_PRESENT
-                useMaterialPropertyBlock = false;
+                if (GraphicsSettings.currentRenderPipeline != null) return false;
 #endif
-                if (!Application.isPlaying) useMaterialPropertyBlock = true;
-                return useMaterialPropertyBlock;
+                return true;
             }
         }
-        
-        public static void SetTexture(this Renderer targetRenderer, string keyword, Texture texture, int materialIndex = 0)
+
+        public static void SetTexture(this Renderer targetRenderer, string keyword, Texture texture,
+            int materialIndex = 0)
         {
             if (UseMaterialPropertyBlock)
             {
@@ -153,8 +165,9 @@ namespace FortySevenE
                 targetRenderer.materials[materialIndex].SetTexture(GlobalHashMap.GetShaderHash(keyword), texture);
             }
         }
-        
-        public static void SetFloat(this Renderer targetRenderer, string keyword, float floatValue, int materialIndex = 0)
+
+        public static void SetFloat(this Renderer targetRenderer, string keyword, float floatValue,
+            int materialIndex = 0)
         {
             if (UseMaterialPropertyBlock)
             {
@@ -168,8 +181,9 @@ namespace FortySevenE
                 targetRenderer.materials[materialIndex].SetFloat(GlobalHashMap.GetShaderHash(keyword), floatValue);
             }
         }
-        
-        public static void SetVector(this Renderer targetRenderer, string keyword, Vector4 vectorValue, int materialIndex = 0)
+
+        public static void SetVector(this Renderer targetRenderer, string keyword, Vector4 vectorValue,
+            int materialIndex = 0)
         {
             if (UseMaterialPropertyBlock)
             {
@@ -183,8 +197,9 @@ namespace FortySevenE
                 targetRenderer.materials[materialIndex].SetVector(GlobalHashMap.GetShaderHash(keyword), vectorValue);
             }
         }
-        
-        public static void SetColor(this Renderer targetRenderer, string keyword, Color colorValue, int materialIndex = 0)
+
+        public static void SetColor(this Renderer targetRenderer, string keyword, Color colorValue,
+            int materialIndex = 0)
         {
             if (UseMaterialPropertyBlock)
             {
@@ -199,7 +214,8 @@ namespace FortySevenE
             }
         }
 
-        public static void SetMatrix(this Renderer targetRenderer, string keyword, Matrix4x4 matrixValue, int materialIndex = 0)
+        public static void SetMatrix(this Renderer targetRenderer, string keyword, Matrix4x4 matrixValue,
+            int materialIndex = 0)
         {
             if (UseMaterialPropertyBlock)
             {
@@ -212,6 +228,79 @@ namespace FortySevenE
             {
                 targetRenderer.materials[materialIndex].SetMatrix(GlobalHashMap.GetShaderHash(keyword), matrixValue);
             }
+        }
+
+        public static Texture GetTexture(this Renderer targetRenderer, string keyword, int materialIndex = 0)
+        {
+            if (UseMaterialPropertyBlock)
+            {
+                var properties = new MaterialPropertyBlock();
+                targetRenderer.GetPropertyBlock(properties, materialIndex);
+                if (properties.HasProperty(GlobalHashMap.GetShaderHash(keyword)))
+                {
+                    return properties.GetTexture(GlobalHashMap.GetShaderHash(keyword));
+                }
+            }
+
+            return targetRenderer.materials[materialIndex].GetTexture(GlobalHashMap.GetShaderHash(keyword));
+        }
+
+        public static float GetFloat(this Renderer targetRenderer, string keyword, int materialIndex = 0)
+        {
+            if (UseMaterialPropertyBlock)
+            {
+                var properties = new MaterialPropertyBlock();
+                targetRenderer.GetPropertyBlock(properties, materialIndex);
+                if (properties.HasProperty(GlobalHashMap.GetShaderHash(keyword)))
+                {
+                    return properties.GetFloat(GlobalHashMap.GetShaderHash(keyword));
+                }
+            }
+
+            return targetRenderer.materials[materialIndex].GetFloat(GlobalHashMap.GetShaderHash(keyword));
+        }
+
+        public static Vector4 GetVector(this Renderer targetRenderer, string keyword, int materialIndex = 0)
+        {
+            if (UseMaterialPropertyBlock)
+            {
+                var properties = new MaterialPropertyBlock();
+                targetRenderer.GetPropertyBlock(properties, materialIndex);
+                if (properties.HasProperty(GlobalHashMap.GetShaderHash(keyword)))
+                {
+                    return properties.GetVector(GlobalHashMap.GetShaderHash(keyword));
+                }
+            }
+
+            return targetRenderer.materials[materialIndex].GetVector(GlobalHashMap.GetShaderHash(keyword));
+        }
+
+        public static Color GetColor(this Renderer targetRenderer, string keyword, int materialIndex = 0)
+        {
+            if (UseMaterialPropertyBlock)
+            {
+                var properties = new MaterialPropertyBlock();
+                targetRenderer.GetPropertyBlock(properties, materialIndex);
+                if (properties.HasProperty(GlobalHashMap.GetShaderHash(keyword)))
+                {
+                    return properties.GetColor(GlobalHashMap.GetShaderHash(keyword));
+                }
+            }
+
+            return targetRenderer.materials[materialIndex].GetColor(GlobalHashMap.GetShaderHash(keyword));
+        }
+
+        public static Matrix4x4 GetMatrix(this Renderer targetRenderer, string keyword, int materialIndex = 0)
+        {
+            if (UseMaterialPropertyBlock)
+            {
+                var properties = new MaterialPropertyBlock();
+                targetRenderer.GetPropertyBlock(properties, materialIndex);
+                if (properties.HasProperty(GlobalHashMap.GetShaderHash(keyword)))
+                    return properties.GetMatrix(GlobalHashMap.GetShaderHash(keyword));
+            }
+
+            return targetRenderer.materials[materialIndex].GetMatrix(GlobalHashMap.GetShaderHash(keyword));
         }
     }
 }
