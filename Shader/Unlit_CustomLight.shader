@@ -47,7 +47,7 @@ Shader "47E/Unlit_CustomLight"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #pragma shader_feature ALPHA_CLIP USE_OCCLUSION
+            #pragma shader_feature ALPHA_CLIP
             #pragma shader_feature USE_OCCLUSION
             #pragma shader_feature USE_LIGHTMAP
 
