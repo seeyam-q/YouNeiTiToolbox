@@ -11,6 +11,6 @@
     "url": "https://seeyam-q.github.io/"
   },
   "dependencies": {
-    "com.unity.timeline": ""
+    "com.unity.timeline": "1.8.9"
   }
 }
