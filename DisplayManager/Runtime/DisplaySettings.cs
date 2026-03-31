@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using System.Runtime.Serialization;
 
@@ -18,10 +18,19 @@ namespace FortySevenE.DisplayManager
         FullMenuBarMinimized
     }
 
+    public enum MonitorSelectionMode
+    {
+        Index,
+        MonitorName
+    }
+
 	[Serializable]
 	public class DisplayWindow
 	{
+        public bool autoSizeToMonitor = true;
+        public MonitorSelectionMode monitorSelectionMode = MonitorSelectionMode.Index;
         public int relativeMonitorIndex;
+        public string monitorName;
         public WindowStyle windowStyle;
 
 		public int left;

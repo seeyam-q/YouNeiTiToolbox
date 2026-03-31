@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace FortySevenE.DisplayManager
 {
@@ -9,13 +9,15 @@ namespace FortySevenE.DisplayManager
 
         }
 
-        public void SetPosition(int index, int left, int top, bool relativeToMonitor, int relativeMonitorIndex)
+        public void SetPosition(int index, DisplayWindow displayWindow)
         {
-            SetPositionAndSize(index, left, top, true, relativeMonitorIndex, 0, 0);
+            SetPositionAndSize(index, displayWindow);
         }
 
-        public void SetPositionAndSize(int index, int left, int top, bool relativeToMonitor, int relativeMonitorIndex, int width, int height)
+        public void SetPositionAndSize(int index, DisplayWindow displayWindow)
         {
+            int width = displayWindow.width;
+            int height = displayWindow.height;
             if (width == 0)
             {
                 width = Display.displays[index].systemWidth;
@@ -26,7 +28,7 @@ namespace FortySevenE.DisplayManager
                 height = Display.displays[index].systemHeight;
             }
 
-            Display.displays[index].SetParams(width, height, left, top);
+            Display.displays[index].SetParams(width, height, displayWindow.left, displayWindow.top);
         }
 
         public void SetSize(int index, int width, int height)
@@ -51,6 +53,19 @@ namespace FortySevenE.DisplayManager
                     Debug.LogWarning(("Minimized window only works on Windows."));
                     break;
             }
+        }
+
+        public bool GetMonitorResolution(DisplayWindow displayWindow, out int width, out int height)
+        {
+            int index = displayWindow.relativeMonitorIndex;
+            if (index >= 0 && index < Display.displays.Length)
+            {
+                width = Display.displays[index].systemWidth;
+                height = Display.displays[index].systemHeight;
+                return true;
+            }
+            width = 0; height = 0;
+            return false;
         }
     }
 }
