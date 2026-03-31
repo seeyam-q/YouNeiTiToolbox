@@ -1,4 +1,4 @@
-﻿#if UNITY_STANDALONE_WIN
+#if UNITY_STANDALONE_WIN
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -242,39 +242,70 @@ namespace FortySevenE.DisplayManager
             ShowWindowAsync(_unityDisplayPointers[index], show ? SW_SHOW : SW_SHOWMINIMIZED);
         }
 
-        public void SetPositionAndSize(int index, int left, int top, bool relativeToMonitor, int relativeMonitorIndex, int width, int height)
+        public void SetPositionAndSize(int index, DisplayWindow displayWindow)
         {
             if (index < _unityDisplayPointers.Count)
             {
-                if (relativeToMonitor)
+                int left = displayWindow.left;
+                int top  = displayWindow.top;
+                
+                DisplayDeviceModel_WindowsOS targetMonitor = GetTargetMonitor(displayWindow);
+                if (targetMonitor != null)
                 {
-                    DisplayDeviceModel_WindowsOS targetMonitor = GetDisplayFromUnityDisplayIndex(relativeMonitorIndex);
-
-                    if (targetMonitor != null)
-                    {
-                        left = left + targetMonitor.X;
-                        top = top + targetMonitor.Y;
-                    }
+                    left = left + targetMonitor.X;
+                    top = top + targetMonitor.Y;
                 }
-                SetPositionAndSizeImpl(index, left, top, width, height);
+                
+                SetPositionAndSizeImpl(index, left, top, displayWindow.width, displayWindow.height);
             }
         }
 
-        public void SetPosition(int index, int left, int top, bool relativeToMonitor, int relativeMonitorIndex)
+        public void SetPosition(int index, DisplayWindow displayWindow)
         {
-            if (index < _unityDisplayPointers.Count) {
-                if (relativeToMonitor)
+            if (index < _unityDisplayPointers.Count) 
+            {
+                int left = displayWindow.left;
+                int top  = displayWindow.top;
+                
+                DisplayDeviceModel_WindowsOS targetMonitor = GetTargetMonitor(displayWindow);
+                if (targetMonitor != null)
                 {
-                    DisplayDeviceModel_WindowsOS targetMonitor = GetDisplayFromUnityDisplayIndex(relativeMonitorIndex);
-
-                    if (targetMonitor != null)
-                    {
-                        left = left + targetMonitor.X;
-                        top = top + targetMonitor.Y;
-                    }
+                    left = left + targetMonitor.X;
+                    top = top + targetMonitor.Y;
                 }
                 SetPositionImpl(index, left, top);
             }
+        }
+        
+        public bool GetMonitorResolution(DisplayWindow displayWindow, out int width, out int height)
+        {
+            width = 0; height = 0;
+            DisplayDeviceModel_WindowsOS monitor = GetTargetMonitor(displayWindow);
+            if (monitor != null)
+            {
+                width = monitor.Width;
+                height = monitor.Height;
+                return true;
+            }
+            return false;
+        }
+
+        private DisplayDeviceModel_WindowsOS GetTargetMonitor(DisplayWindow displayWindow)
+        {
+            if (displayWindow.monitorSelectionMode == MonitorSelectionMode.MonitorName && !string.IsNullOrEmpty(displayWindow.monitorName))
+            {
+                foreach (var display in GetDisplays())
+                {
+                    if (!string.IsNullOrEmpty(display.MonitorName) && 
+                        display.MonitorName.EndsWith(displayWindow.monitorName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return display;
+                    }
+                }
+            }
+            
+            // Fallback to Index
+            return GetDisplayFromUnityDisplayIndex(displayWindow.relativeMonitorIndex);
         }
 
         public void SetSize(int index, int width, int height)
@@ -398,76 +429,82 @@ namespace FortySevenE.DisplayManager
         {
             if (_displayDevices == null)
             {
-                var device = new DISPLAY_DEVICE();
-                device.cb = Marshal.SizeOf(device);
-                Dictionary<string, KeyValuePair<int, string>> deviceNamesForDisplays = new Dictionary<string, KeyValuePair<int, string>>();
-                for (uint id = 0; EnumDisplayDevices(null, id, ref device, 0); id++)
-                {
-                    if ((device.StateFlags & DisplayDeviceStateFlags.AttachedToDesktop) != 0)
-                    {
-                        deviceNamesForDisplays.Add(device.DeviceName, new KeyValuePair<int, string>( (int) id, device.DeviceString));
-                    }
-                }
-
-                _displayDevices = new List<DisplayDeviceModel_WindowsOS>();
-
-                int monitorControlPanelIndex = 0;
-                int primaryMonitorCPIndex = int.MaxValue;
-                EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero,
-                    delegate (IntPtr hMonitor, IntPtr hdcMonitor, ref RectNative lprcMonitor, IntPtr dwData)
-                    {
-                        MONITORINFOEX monitor = new MONITORINFOEX();
-                        monitor.Size = (uint)Marshal.SizeOf(monitor);
-
-                        bool result = GetMonitorInfo(hMonitor, ref monitor);
-                        if (result)
-                        {
-                            string graphicsDeviceName = "";
-                            int monitorId = 0;
-                            if (deviceNamesForDisplays.ContainsKey(monitor.DeviceName))
-                            {
-                                monitorId = deviceNamesForDisplays[monitor.DeviceName].Key;
-                                graphicsDeviceName = deviceNamesForDisplays[monitor.DeviceName].Value;
-                            }
-
-                            DISPLAY_DEVICE displayDevice = new DISPLAY_DEVICE();
-                            displayDevice.cb = Marshal.SizeOf(displayDevice);
-                            EnumDisplayDevices(monitor.DeviceName, 0, ref displayDevice, 0);
-
-                            int unityDisplayIndex = monitorControlPanelIndex;
-                            if (monitor.Flags == 1)
-                            {
-                                primaryMonitorCPIndex = monitorControlPanelIndex;
-                                unityDisplayIndex = 0;
-                            }
-                            else
-                            {
-                                if (monitorControlPanelIndex < primaryMonitorCPIndex)
-                                {
-                                    unityDisplayIndex = unityDisplayIndex + 1;
-                                }
-                            }
-
-                            DisplayDeviceModel_WindowsOS display = new DisplayDeviceModel_WindowsOS(
-                                monitor.Monitor.Left,
-                                monitor.Monitor.Top,
-                                monitor.Monitor.Width,
-                                monitor.Monitor.Height,
-                                monitor.Flags == 1,
-                                unityDisplayIndex,//int.Parse(monitor.DeviceName.ToLower().Replace("\\\\.\\display", "")),
-                                displayDevice.DeviceString,
-                                displayDevice.DeviceID,
-                                displayDevice.DeviceKey,
-                                graphicsDeviceName);
-                            _displayDevices.Add(display);
-                            monitorControlPanelIndex++;
-                            Debug.Log(display);
-                        }
-                        return true;
-                    }, IntPtr.Zero);
+                _displayDevices = FetchAllDisplays();
             }
 
             return _displayDevices;
+        }
+
+        public static List<DisplayDeviceModel_WindowsOS> FetchAllDisplays()
+        {
+            var device = new DISPLAY_DEVICE();
+            device.cb = Marshal.SizeOf(device);
+            Dictionary<string, KeyValuePair<int, string>> deviceNamesForDisplays = new Dictionary<string, KeyValuePair<int, string>>();
+            for (uint id = 0; EnumDisplayDevices(null, id, ref device, 0); id++)
+            {
+                if ((device.StateFlags & DisplayDeviceStateFlags.AttachedToDesktop) != 0)
+                {
+                    deviceNamesForDisplays.Add(device.DeviceName, new KeyValuePair<int, string>( (int) id, device.DeviceString));
+                }
+            }
+
+            var displayDevices = new List<DisplayDeviceModel_WindowsOS>();
+
+            int monitorControlPanelIndex = 0;
+            int primaryMonitorCPIndex = int.MaxValue;
+            EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero,
+                delegate (IntPtr hMonitor, IntPtr hdcMonitor, ref RectNative lprcMonitor, IntPtr dwData)
+                {
+                    MONITORINFOEX monitor = new MONITORINFOEX();
+                    monitor.Size = (uint)Marshal.SizeOf(monitor);
+
+                    bool result = GetMonitorInfo(hMonitor, ref monitor);
+                    if (result)
+                    {
+                        string graphicsDeviceName = "";
+                        int monitorId = 0;
+                        if (deviceNamesForDisplays.ContainsKey(monitor.DeviceName))
+                        {
+                            monitorId = deviceNamesForDisplays[monitor.DeviceName].Key;
+                            graphicsDeviceName = deviceNamesForDisplays[monitor.DeviceName].Value;
+                        }
+
+                        DISPLAY_DEVICE displayDevice = new DISPLAY_DEVICE();
+                        displayDevice.cb = Marshal.SizeOf(displayDevice);
+                        EnumDisplayDevices(monitor.DeviceName, 0, ref displayDevice, 0);
+
+                        int unityDisplayIndex = monitorControlPanelIndex;
+                        if (monitor.Flags == 1)
+                        {
+                            primaryMonitorCPIndex = monitorControlPanelIndex;
+                            unityDisplayIndex = 0;
+                        }
+                        else
+                        {
+                            if (monitorControlPanelIndex < primaryMonitorCPIndex)
+                            {
+                                unityDisplayIndex = unityDisplayIndex + 1;
+                            }
+                        }
+
+                        DisplayDeviceModel_WindowsOS display = new DisplayDeviceModel_WindowsOS(
+                            monitor.Monitor.Left,
+                            monitor.Monitor.Top,
+                            monitor.Monitor.Width,
+                            monitor.Monitor.Height,
+                            monitor.Flags == 1,
+                            unityDisplayIndex,
+                            monitor.DeviceName,
+                            displayDevice.DeviceID,
+                            displayDevice.DeviceKey,
+                            graphicsDeviceName);
+                        displayDevices.Add(display);
+                        monitorControlPanelIndex++;
+                    }
+                    return true;
+                }, IntPtr.Zero);
+
+            return displayDevices;
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
